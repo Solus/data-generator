@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croatian IBAN, OIB, and Name Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        .display-label {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            width: 200px;
+            text-align: left;
+            font-family: monospace;
+            border-radius: 0.25rem;
+        }
+
+        #ibanDisplayLabel, #oibDisplayLabel {
+            display: inline-block;
+            padding: 0.75rem 1rem; /* Increased padding */
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            width: 100%; /* Make it take full width of its column */
+            text-align: left;
+            font-family: monospace;
+            word-wrap: break-word;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            height: auto; /* Allow height to adjust based on content */
+            font-size: 1.25rem; /* Increased font size */
+            min-height: 50px; /* Ensure a minimum height */
+        }
+
+        .countryCode {
+            color: #0000FF;
+        }
+
+        .checkDigits {
+            color: #FF0000;
+        }
+
+        .bankCode {
+            color: #008000;
+        }
+
+        .accountNumber {
+            color: #800080;
+        }
+
+        .copy-button {
+            padding: 0.375rem 0.75rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+
+        .copy-button i {
+            margin-right: 0;
+        }
+
+        .generate-button {
+            padding: 0.375rem 0.75rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0.25rem;
+        }
+
+        .generate-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Specific rule for Font Awesome magic icon in generate button */
+        .generate-button .fas.fa-wand-magic-sparkles {
+            display: inline-block;
+            font-family: "Font Awesome 6 Free"; /* Ensure correct font family */
+            font-weight: 900; /* For solid icons */
+            margin-right: 0.25rem; /* Add margin for text */
+        }
+
+
+        .label-icon {
+            margin-right: 0.25rem;
+        }
+
+        .error-label {
+            color: red;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%; /* Adjust as needed */
+        }
+
+        .custom-dropdown-display {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 210px; /* Match select width */
+        }
+
+        .custom-dropdown-display::after {
+            content: '\f0d7'; /* Font Awesome caret-down icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-left: 0.5rem;
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 280px; /* Wider to accommodate two columns */
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            display: none; /* Hidden by default */
+        }
+
+        .custom-dropdown-menu.show {
+            display: block;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .custom-dropdown-item .bank-name {
+            flex: 1;
+            text-align: left;
+        }
+
+        .custom-dropdown-item .bank-vbdi {
+            flex: 0 0 80px; /* Fixed width for VBDI */
+            text-align: right;
+            font-family: monospace;
+            color: #6c757d;
+        }
+
+        /* Names Grid - Overall Container */
+        .names-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto; /* Ime, Prezime, Actions Column (fixed width) */
+            gap: 0;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            overflow: hidden; /* Hide content that slides out of bounds initially */
+            background-color: #fcfcfc;
+        }
+
+        .names-grid-header {
+            font-weight: bold;
+            background-color: #e0e0e0;
+            padding: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            border-radius: 0;
+        }
+
+        .names-grid-header:last-child {
+            border-right: none;
+            text-align: center; /* Center the icon */
+        }
+
+        /* Names Grid Row - New wrapper for each row */
+        .names-grid-row {
+            display: grid; /* Make each row a grid itself */
+            grid-template-columns: subgrid; /* Inherit columns from parent grid */
+            grid-column: 1 / -1; /* Span all columns of the parent grid */
+            position: relative; /* For absolute positioning of sliding panel */
+            border-bottom: 1px solid #eee; /* Bottom border for the row */
+            height: auto; /* Allow row height to adapt */
+        }
+        .names-grid-row:last-child {
+            border-bottom: none; /* No bottom border on the last row */
+        }
+        /* Alternating background colors applied to the row wrapper */
+        .names-grid-row:nth-child(odd) {
+            background-color: #ffffff; /* White for odd rows */
+        }
+        .names-grid-row:nth-child(even) {
+            background-color: #f8f8f8; /* Light gray for even rows */
+        }
+        /* Apply hover background to individual cells within the row */
+        .names-grid-row:hover .name-cell {
+            background-color: #e6e6e6; /* Subtle change on hover */
+        }
+
+
+        .name-cell {
+            position: relative;
+            padding: 5px;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            border-right: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease-in-out; /* Smooth transition for hover */
+        }
+        .names-grid-row .name-cell:last-child { /* The last visible name cell in the row (before trigger) */
+            border-right: none;
+        }
+
+        /* Actions Cell (now contains the dropdown) */
+        .actions-cell.dropdown {
+            display: flex; /* Use flex to center the dropdown toggle */
+            align-items: center;
+            justify-content: center;
+            border-right: none; /* No right border for this column */
+            border-bottom: 1px solid #eee; /* Consistent bottom border */
+            padding: 5px; /* Consistent padding */
+            position: relative; /* For dropdown positioning */
+        }
+
+        /* Style for the dropdown toggle button */
+        .actions-cell .dropdown-toggle {
+            background-color: transparent;
+            border: none;
+            color: #6c757d; /* Muted color */
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem; /* Slightly wider padding */
+            transition: color 0.2s ease-in-out;
+        }
+        .actions-cell .dropdown-toggle:hover {
+            color: #007bff; /* Highlight on hover */
+        }
+        .actions-cell .dropdown-toggle::after { /* Hide Bootstrap's default caret */
+            display: none;
+        }
+
+        /* Style for dropdown menu items */
+        .actions-cell .dropdown-menu {
+            min-width: 100px; /* Adjust width as needed */
+        }
+        .actions-cell .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+            font-size: 0.85rem; /* Slightly smaller text for dropdown items */
+            padding: 0.5rem 1rem;
+        }
+        .actions-cell .dropdown-menu .dropdown-item i.fas {
+            margin-right: 0; /* Icon already has gap from flex */
+        }
+
+
+        /* Copy button inside name cells (individual name copy) */
+        .copy-cell-button {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            opacity: 0;
+            margin-left: 5px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0s; /* Instant appearance/disappearance */
+        }
+
+        /* Individual copy buttons are now always visible on cell hover, not just row hover */
+        .name-cell:hover .copy-cell-button {
+            opacity: 1;
+        }
+
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            -webkit-animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
+        @-webkit-keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Croatian IBAN, OIB, and Name Generator</h1>
+
+        <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="iban-tab" data-bs-toggle="tab" data-bs-target="#iban-pane" type="button" role="tab" aria-controls="iban-pane" aria-selected="true">
+                    <i class="fas fa-money-check-dollar label-icon"></i> IBAN Generator
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="oib-tab" data-bs-toggle="tab" data-bs-target="#oib-pane" type="button" role="tab" aria-controls="oib-pane" aria-selected="false">
+                    <i class="fas fa-id-card label-icon"></i> OIB Generator
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="names-tab" data-bs-toggle="tab" data-bs-target="#names-pane" type="button" role="tab" aria-controls="names-pane" aria-selected="false">
+                    <i class="fas fa-users label-icon"></i> Names
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="iban-pane" role="tabpanel" aria-labelledby="iban-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-12 d-flex align-items-center">
+                         <label for="ibanDisplay" class="label-icon me-2">
+                            <i class="fas fa-file-invoice-with-watermark"></i> Generated IBAN:
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 d-flex align-items-center">
+                        <span id="ibanDisplayLabel">&nbsp;</span>
+                        <button id="ibanCopyButton" onclick="copyToClipboard('iban')" class="btn btn-success copy-button ms-2">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div id="ibanErrorLabel" class="text-danger error-label"></div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="bankSelect" class="label-icon">
+                            <i class="fas fa-university"></i> Select Bank:
+                        </label>
+                    </div>
+                    <div class="col-md-8 col-lg-6">
+                        <select id="bankSelect" class="form-select d-none">
+                            <option value="">-- Select a Bank --</option>
+                            <option value="zaba">Zagrebačka banka</option>
+                            <option value="pbz">Privredna banka Zagreb</option>
+                            <option value="erste">Erste & Steiermärkische Bank</option>
+                            <option value="otp">OTP banka</option>
+                            <option value="rba">Raiffeisenbank Hrvatska</option>
+                        </select>
+
+                        <div class="custom-dropdown">
+                            <div id="customBankSelectDisplay" class="custom-dropdown-display">
+                                -- Select a Bank --
+                            </div>
+                            <div id="customBankDropdownMenu" class="custom-dropdown-menu">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="vbdiDisplay" class="label-icon">
+                            <i class="fas fa-building-columns"></i> Bank Identifier (VBDI):
+                        </label>
+                    </div>
+                    <div class="col-md-8 col-lg-6">
+                        <span id="vbdiDisplayLabel" class="display-label">&nbsp;</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-8 col-lg-6">
+                        <button onclick="generateIBAN()" class="btn btn-primary generate-button me-2">
+                            <i class="fas fa-key"></i> Generate IBAN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="oib-pane" role="tabpanel" aria-labelledby="oib-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="oibDisplay" class="label-icon">
+                            <i class="fas fa-id-card-clip"></i> Generated OIB:
+                        </label>
+                    </div>
+                    <div class="col-12 d-flex align-items-center">
+                        <span id="oibDisplayLabel" class="display-label">&nbsp;</span>
+                        <button id="oibCopyButton" onclick="copyToClipboard('oib')" class="btn btn-success copy-button ms-2">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-8 col-lg-6">
+                        <button onclick="generateOIB()" class="btn btn-primary generate-button me-2">
+                            <i class="fas fa-dice"></i> Generate OIB
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div id="oibErrorLabel" class="text-danger error-label"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="names-pane" role="tabpanel" aria-labelledby="names-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="numNames" class="label-icon">
+                            <i class="fas fa-hashtag"></i> Number of Names:
+                        </label>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <input type="number" id="numNames" class="form-control" value="10" min="1" max="50">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-8 col-lg-6">
+                        <button onclick="generateNames()" class="btn btn-primary generate-button">
+                            <span id="generateNamesSpinner" class="loading-spinner d-none"></span>
+                            <i class="fas fa-wand-magic-sparkles"></i> <span id="generateNamesText">Generate Names</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div id="namesErrorLabel" class="text-danger error-label"></div>
+                        <div id="namesDisplayGrid" class="names-grid">
+                            <div class="names-grid-header">Ime</div>
+                            <div class="names-grid-header">Prezime</div>
+                            <div class="names-grid-header"><i class="fas fa-ellipsis-h"></i></div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        // --- IBAN Generator Logic ---
+        const bankData = {
+            zaba: { name: "Zagrebačka banka", vbdi: "2360000" },
+            pbz: { name: "Privredna banka Zagreb", vbdi: "2340009" },
+            erste: { name: "Erste & Steiermärkische Bank", vbdi: "2402006" },
+            otp: { name: "OTP banka", vbdi: "2407000" },
+            rba: { name: "Raiffeisenbank Hrvatska", vbdi: "2484008" }
+        };
+
+        const bankSelect = document.getElementById("bankSelect"); // Hidden native select
+        const customBankSelectDisplay = document.getElementById("customBankSelectDisplay");
+        const customBankDropdownMenu = document.getElementById("customBankDropdownMenu");
+        const vbdiDisplayLabel = document.getElementById("vbdiDisplayLabel");
+        const ibanDisplayLabel = document.getElementById("ibanDisplayLabel");
+        const ibanCopyButton = document.getElementById("ibanCopyButton");
+        const ibanErrorLabel = document.getElementById("ibanErrorLabel");
+
+        // Populate custom dropdown on load
+        document.addEventListener('DOMContentLoaded', () => {
+            for (const key in bankData) {
+                if (bankData.hasOwnProperty(key)) {
+                    const bank = bankData[key];
+                    const item = document.createElement('div');
+                    item.classList.add('custom-dropdown-item');
+                    item.setAttribute('data-value', key);
+                    item.innerHTML = `<span class="bank-name">${bank.name}</span><span class="bank-vbdi">${bank.vbdi}</span>`;
+                    item.addEventListener('click', () => {
+                        selectCustomBank(key, bank.name, bank.vbdi);
+                        customBankDropdownMenu.classList.remove('show');
+                    });
+                    customBankDropdownMenu.appendChild(item);
+                }
+            }
+
+            // Close dropdown if clicked outside
+            document.body.addEventListener('click', (event) => {
+                if (!customBankSelectDisplay.contains(event.target) && !customBankDropdownMenu.contains(event.target)) {
+                    customBankDropdownMenu.classList.remove('show');
+                }
+            });
+        });
+
+        customBankSelectDisplay.addEventListener('click', () => {
+            customBankDropdownMenu.classList.toggle('show');
+        });
+
+        function selectCustomBank(key, name, vbdi) {
+            bankSelect.value = key; // Update hidden native select
+            customBankSelectDisplay.textContent = name; // Display only name
+            vbdiDisplayLabel.textContent = vbdi;
+            ibanErrorLabel.style.display = "none";
+            generateIBAN();
+        }
+
+        function generateIBAN() {
+            let selectedBankKey = bankSelect.value;
+            let vbdi;
+            let bankName;
+
+            if (!selectedBankKey || !bankData[selectedBankKey]) {
+                // If no bank is selected or an invalid one, pick one at random
+                const bankKeys = Object.keys(bankData);
+                selectedBankKey = bankKeys[Math.floor(Math.random() * bankKeys.length)];
+                bankSelect.value = selectedBankKey; // Update hidden native select
+            }
+            vbdi = bankData[selectedBankKey].vbdi;
+            bankName = bankData[selectedBankKey].name;
+
+            // Update the display for the custom dropdown
+            customBankSelectDisplay.textContent = bankName;
+            vbdiDisplayLabel.textContent = vbdi;
+
+
+            const accountNumber = generateRandomDigits(10);
+            const countryCode = "HR";
+            const bbban = vbdi + accountNumber;
+            const checkDigits = calculateIBANCheckDigits(countryCode + "00" + bbban);
+            const iban = countryCode + checkDigits + bbban;
+
+            ibanDisplayLabel.innerHTML = `<span class="countryCode">${countryCode}</span><span class="checkDigits">${checkDigits}</span><span class="bankCode">${vbdi}</span><span class="accountNumber">${accountNumber}</span>`;
+            ibanErrorLabel.style.display = "none";
+        }
+
+        function calculateIBANCheckDigits(ibanWithoutCheckDigits) {
+            const movedFirstPart = ibanWithoutCheckDigits.substring(4) + ibanWithoutCheckDigits.substring(0, 4);
+            let numericString = "";
+            for (let i = 0; i < movedFirstPart.length; i++) {
+                const char = movedFirstPart[i];
+                if (isNaN(parseInt(char, 10))) {
+                    numericString += (char.charCodeAt(0) - 55).toString();
+                } else {
+                    numericString += char;
+                }
+            }
+
+            let remainder = parseInt(numericString.substring(0, 15), 10) % 97;
+            numericString = numericString.substring(15);
+            while (numericString.length > 0) {
+                const nextPart = numericString.substring(0, 9);
+                remainder = parseInt(remainder + nextPart, 10) % 97;
+                numericString = numericString.substring(9);
+            }
+
+            const checkDigitValue = 98 - remainder;
+            return (checkDigitValue < 10 ? "0" : "") + checkDigitValue.toString();
+        }
+
+        // --- OIB Generator Logic ---
+        const oibDisplayLabel = document.getElementById("oibDisplayLabel");
+        const oibCopyButton = document.getElementById("oibCopyButton");
+        const oibErrorLabel = document.getElementById("oibErrorLabel");
+
+        function generateOIB() {
+            const firstTenDigits = generateRandomDigits(10);
+            const checkDigit = calculateOIBCheckDigit(firstTenDigits);
+            const oib = firstTenDigits + checkDigit;
+            oibDisplayLabel.textContent = oib;
+            oibErrorLabel.style.display = "none";
+        }
+
+        function calculateOIBCheckDigit(firstTenDigits) {
+            let sum = 10;
+            for (let i = 0; i < 10; i++) {
+                let digit = parseInt(firstTenDigits[i], 10);
+                sum = sum + digit;
+                sum = sum % 10;
+                if (sum === 0) {
+                    sum = 10;
+                }
+                sum = sum * 2;
+                sum = sum % 11;
+            }
+            let checkDigit = 11 - sum;
+            if (checkDigit === 10) {
+                checkDigit = 0;
+            }
+            return checkDigit.toString();
+        }
+
+        function generateRandomDigits(length) {
+            let result = '';
+            const characters = '0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        // --- Names Generator Logic ---
+        const numNamesInput = document.getElementById("numNames");
+        const namesDisplayGrid = document.getElementById("namesDisplayGrid");
+        const namesErrorLabel = document.getElementById("namesErrorLabel");
+        const generateNamesSpinner = document.getElementById("generateNamesSpinner");
+        const generateNamesText = document.getElementById("generateNamesText"); // Get the text span
+
+        // Global variable to keep track of the currently open dropdown
+        let openDropdown = null;
+
+        document.body.addEventListener('click', (event) => {
+            // Close any other open dropdowns if the click is outside
+            if (openDropdown && !event.target.closest('.dropdown')) {
+                openDropdown.classList.remove('show');
+                openDropdown = null;
+            }
+        });
+
+        async function generateNames() {
+            const numNames = parseInt(numNamesInput.value, 10);
+            if (isNaN(numNames) || numNames < 1 || numNames > 50) {
+                namesErrorLabel.textContent = "Please enter a number between 1 and 50.";
+                namesErrorLabel.style.display = "block";
+                return;
+            }
+
+            // Clear previous names and add headers
+            namesDisplayGrid.innerHTML = '<div class="names-grid-header">Ime</div><div class="names-grid-header">Prezime</div><div class="names-grid-header"><i class="fas fa-ellipsis-h"></i></div>';
+            namesErrorLabel.style.display = "none";
+            generateNamesSpinner.classList.remove('d-none'); // Show spinner
+            generateNamesText.textContent = "Generating..."; // Update button text
+
+            // Updated prompt for Gemini
+            const prompt = `Generate a list of ${numNames} unique Croatian first and last names. Format each name as "Firstname,Lastname" on a new line, with no introductory or concluding text.`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Leave as empty string for Canvas to provide
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    const nameLines = text.split('\n').filter(line => line.trim() !== '');
+
+                    if (nameLines.length === 0) {
+                        namesErrorLabel.textContent = "No names generated. Please try again.";
+                        namesErrorLabel.style.display = "block";
+                    } else {
+                        nameLines.forEach((line, index) => {
+                            const parts = line.split(',');
+                            if (parts.length === 2) {
+                                const firstName = parts[0].trim();
+                                const lastName = parts[1].trim();
+
+                                // Create a container for the row
+                                const namesGridRow = document.createElement('div');
+                                namesGridRow.classList.add('names-grid-row');
+                                // Apply alternating colors directly to the row container
+                                if ((index + 1) % 2 !== 0) { // Odd index (1st, 3rd row etc.)
+                                    namesGridRow.style.backgroundColor = '#ffffff';
+                                } else { // Even index (2nd, 4th row etc.)
+                                    namesGridRow.style.backgroundColor = '#f8f8f8';
+                                }
+
+                                // First Name Cell
+                                const firstNameCell = document.createElement('div');
+                                firstNameCell.classList.add('name-cell');
+                                const firstNameSpan = document.createElement('span');
+                                firstNameSpan.textContent = firstName;
+                                firstNameCell.appendChild(firstNameSpan);
+
+                                const firstNameCopyButton = document.createElement('button');
+                                firstNameCopyButton.classList.add('copy-cell-button', 'btn', 'btn-sm', 'btn-light');
+                                firstNameCopyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                                firstNameCopyButton.title = `Copy ${firstName}`;
+                                firstNameCopyButton.onclick = (event) => {
+                                    event.stopPropagation(); // Prevent triggering cell's hover effect issues
+                                    copyIndividualName(firstName, 'namesErrorLabel', firstNameCopyButton);
+                                };
+                                firstNameCell.appendChild(firstNameCopyButton);
+
+                                // Last Name Cell
+                                const lastNameCell = document.createElement('div');
+                                lastNameCell.classList.add('name-cell');
+                                const lastNameSpan = document.createElement('span');
+                                lastNameSpan.textContent = lastName;
+                                lastNameCell.appendChild(lastNameSpan);
+
+                                const lastNameCopyButton = document.createElement('button');
+                                lastNameCopyButton.classList.add('copy-cell-button', 'btn', 'btn-sm', 'btn-light');
+                                lastNameCopyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                                lastNameCopyButton.title = `Copy ${lastName}`;
+                                lastNameCopyButton.onclick = (event) => {
+                                    event.stopPropagation(); // Prevent triggering cell's hover effect issues
+                                    copyIndividualName(lastName, 'namesErrorLabel', lastNameCopyButton);
+                                };
+                                lastNameCell.appendChild(lastNameCopyButton);
+
+                                // Actions Cell (contains the dropdown)
+                                const actionsCell = document.createElement('div');
+                                actionsCell.classList.add('name-cell', 'actions-cell', 'dropdown'); // Add 'dropdown' class
+
+                                const dropdownToggleBtn = document.createElement('button');
+                                dropdownToggleBtn.classList.add('btn', 'btn-sm', 'btn-outline-secondary', 'dropdown-toggle');
+                                dropdownToggleBtn.setAttribute('type', 'button');
+                                dropdownToggleBtn.setAttribute('data-bs-toggle', 'dropdown');
+                                dropdownToggleBtn.setAttribute('aria-expanded', 'false');
+                                dropdownToggleBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>'; // Vertical dots icon
+                                dropdownToggleBtn.title = 'More copy options';
+                                actionsCell.appendChild(dropdownToggleBtn);
+
+                                const dropdownMenu = document.createElement('ul');
+                                dropdownMenu.classList.add('dropdown-menu');
+                                // Use a unique ID for aria-labelledby if needed, but Bootstrap often handles this automatically
+                                // dropdownMenu.setAttribute('aria-labelledby', `dropdownMenuButton${index}`);
+                                // dropdownToggleBtn.id = `dropdownMenuButton${index}`; // Set ID on toggle button
+
+                                const liImePrezime = document.createElement('li');
+                                const btnImePrezime = document.createElement('button');
+                                btnImePrezime.classList.add('dropdown-item');
+                                btnImePrezime.innerHTML = `<i class="fas fa-copy"></i> <span>${firstName} ${lastName}</span>`;
+                                btnImePrezime.title = `Copy ${firstName} ${lastName}`;
+                                btnImePrezime.onclick = (event) => {
+                                    event.stopPropagation(); // Prevent dropdown from closing immediately
+                                    copyIndividualName(`${firstName} ${lastName}`, 'namesErrorLabel', btnImePrezime);
+                                    // Optional: close dropdown after copy
+                                    // dropdownMenu.classList.remove('show');
+                                    // openDropdown = null;
+                                };
+                                liImePrezime.appendChild(btnImePrezime);
+                                dropdownMenu.appendChild(liImePrezime);
+
+                                const liPrezimeIme = document.createElement('li');
+                                const btnPrezimeIme = document.createElement('button');
+                                btnPrezimeIme.classList.add('dropdown-item');
+                                btnPrezimeIme.innerHTML = `<i class="fas fa-copy"></i> <span>${lastName} ${firstName}</span>`;
+                                btnPrezimeIme.title = `Copy ${lastName} ${firstName}`;
+                                btnPrezimeIme.onclick = (event) => {
+                                    event.stopPropagation(); // Prevent dropdown from closing immediately
+                                    copyIndividualName(`${lastName} ${firstName}`, 'namesErrorLabel', btnPrezimeIme);
+                                    // Optional: close dropdown after copy
+                                    // dropdownMenu.classList.remove('show');
+                                    // openDropdown = null;
+                                };
+                                liPrezimeIme.appendChild(btnPrezimeIme);
+                                dropdownMenu.appendChild(liPrezimeIme);
+
+                                actionsCell.appendChild(dropdownMenu);
+
+                                // Append cells to the row container
+                                namesGridRow.appendChild(firstNameCell);
+                                namesGridRow.appendChild(lastNameCell);
+                                namesGridRow.appendChild(actionsCell); // Add the new actions cell
+
+                                // Append the row container to the main names grid
+                                namesDisplayGrid.appendChild(namesGridRow);
+                            }
+                        });
+                    }
+                } else {
+                    namesErrorLabel.textContent = "Could not retrieve names. Please try again.";
+                    namesErrorLabel.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                namesErrorLabel.textContent = "Error: Failed to fetch names. Please check your network connection.";
+                namesErrorLabel.style.display = "block";
+            } finally {
+                generateNamesSpinner.classList.add('d-none'); // Hide spinner
+                generateNamesText.textContent = "Generate Names"; // Revert button text
+            }
+        }
+
+        // --- General Copy to Clipboard Function (for IBAN/OIB) ---
+        function copyToClipboard(type) {
+            let textToCopy = "";
+            let errorElement = null;
+            let copyButtonElement = null;
+
+            if (type === 'iban') {
+                textToCopy = ibanDisplayLabel.textContent;
+                errorElement = ibanErrorLabel;
+                copyButtonElement = ibanCopyButton;
+            } else if (type === 'oib') {
+                textToCopy = oibDisplayLabel.textContent;
+                errorElement = oibErrorLabel;
+                copyButtonElement = oibCopyButton;
+            }
+
+            if (!textToCopy || textToCopy.trim() === '&nbsp;') {
+                errorElement.textContent = `No ${type.toUpperCase()} to copy. Please generate an ${type.toUpperCase()} first.`;
+                errorElement.style.display = "block";
+                return;
+            }
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                if (copyButtonElement) {
+                    copyButtonElement.innerHTML = '<i class="fas fa-check"></i>'; // Only icon
+                }
+                errorElement.style.display = "none";
+                setTimeout(() => {
+                    if (copyButtonElement) {
+                        copyButtonElement.innerHTML = '<i class="fas fa-copy"></i>'; // Revert to original icon
+                    }
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                errorElement.textContent = `Failed to copy ${type.toUpperCase()}. Please copy manually.`;
+                errorElement.style.display = "block";
+                if (copyButtonElement) {
+                    copyButtonElement.innerHTML = '<i class="fas fa-copy"></i>'; // Revert to original icon on failure
+                }
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        // --- Individual Name Copy Function (for Names tab) ---
+        function copyIndividualName(text, errorLabelId, buttonElement) {
+            const errorElement = document.getElementById(errorLabelId);
+            const iconElement = buttonElement.querySelector('i'); // Get the icon element
+
+            if (!text || text.trim() === '') {
+                errorElement.textContent = `No text to copy.`;
+                errorElement.style.display = "block";
+                return;
+            }
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                if (iconElement) {
+                    iconElement.classList.remove('fa-copy');
+                    iconElement.classList.add('fa-check');
+                }
+                // Change button color for feedback
+                buttonElement.classList.remove('btn-light', 'btn-outline-secondary');
+                buttonElement.classList.add('btn-success');
+
+                errorElement.style.display = "none";
+                setTimeout(() => {
+                    if (iconElement) {
+                        iconElement.classList.remove('fa-check');
+                        iconElement.classList.add('fa-copy');
+                    }
+                    // Revert button color
+                    buttonElement.classList.remove('btn-success');
+                    if (buttonElement.classList.contains('copy-cell-button')) {
+                        buttonElement.classList.add('btn-light');
+                    } else {
+                        buttonElement.classList.add('btn-outline-secondary');
+                    }
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                errorElement.textContent = `Failed to copy. Please copy manually.`;
+                errorElement.style.display = "block";
+                if (iconElement) {
+                    iconElement.classList.remove('fa-check');
+                    iconElement.classList.add('fa-copy');
+                }
+                // Revert button color on failure
+                buttonElement.classList.remove('btn-success');
+                if (buttonElement.classList.contains('copy-cell-button')) {
+                    buttonElement.classList.add('btn-light');
+                } else {
+                    buttonElement.classList.add('btn-outline-secondary');
+                }
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
+    </script>
+</body>
+</html>
