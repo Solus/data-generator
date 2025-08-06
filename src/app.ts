@@ -158,67 +158,13 @@ function copyToClipboard(text: string, errorLabelId: string, buttonElement: HTML
                 buttonElement.classList.add('btn-outline-secondary');
             }
         }, 2000);
-    } catch (err: any) { // Explicitly type err as 'any' or 'unknown'
+    } catch (err: unknown) { // Explicitly type error as 'unknown'
         console.error('Failed to copy: ', err);
-        errorElement.textContent = `Failed to copy. Please copy manually. ${err.message || ''}`;
-        errorElement.style.display = "block";
-        if (iconElement) {
-            iconElement.classList.remove('fa-check');
-            iconElement.classList.add('fa-copy');
+        let errorMessage = 'Failed to copy. Please copy manually.';
+        if (err instanceof Error) { // Check if it's an Error object
+            errorMessage += ` ${err.message}`;
         }
-        // Revert button color on failure
-        buttonElement.classList.remove('btn-success');
-        if (buttonElement.classList.contains('copy-cell-button')) {
-            buttonElement.classList.add('btn-light');
-        } else {
-            buttonElement.classList.add('btn-outline-secondary');
-        }
-    } finally {
-        document.body.removeChild(tempInput);
-    }
-}
-
-function copyIndividualName(text: string, errorLabelId: string, buttonElement: HTMLButtonElement): void {
-    const errorElement = document.getElementById(errorLabelId) as HTMLDivElement;
-    const iconElement = buttonElement.querySelector('i') as HTMLElement;
-
-    if (!text || text.trim() === '') {
-        errorElement.textContent = `No text to copy.`;
-        errorElement.style.display = "block";
-        return;
-    }
-
-    const tempInput = document.createElement('textarea');
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    try {
-        document.execCommand('copy');
-        if (iconElement) {
-            iconElement.classList.remove('fa-copy');
-            iconElement.classList.add('fa-check');
-        }
-        // Change button color for feedback
-        buttonElement.classList.remove('btn-light', 'btn-outline-secondary');
-        buttonElement.classList.add('btn-success');
-
-        errorElement.style.display = "none";
-        setTimeout(() => {
-            if (iconElement) {
-                iconElement.classList.remove('fa-check');
-                iconElement.classList.add('fa-copy');
-            }
-            // Revert button color
-            buttonElement.classList.remove('btn-success');
-            if (buttonElement.classList.contains('copy-cell-button')) {
-                buttonElement.classList.add('btn-light');
-            } else {
-                buttonElement.classList.add('btn-outline-secondary');
-            }
-        }, 2000);
-    } catch (err: any) {
-        console.error('Failed to copy: ', err);
-        errorElement.textContent = `Failed to copy. Please copy manually.`;
+        errorElement.textContent = errorMessage;
         errorElement.style.display = "block";
         if (iconElement) {
             iconElement.classList.remove('fa-check');
@@ -309,7 +255,7 @@ function generateOIB(): void {
  * Generates and displays a list of Croatian first and last names using Gemini API.
  */
 async function generateNames(): Promise<void> {
-    const numNames = parseInt(numNamesInput.value, 10);
+    /*const numNames = parseInt(numNamesInput.value, 10);
     if (isNaN(numNames) || numNames < 1 || numNames > 50) {
         namesErrorLabel.textContent = "Please enter a number between 1 and 50.";
         namesErrorLabel.style.display = "block";
@@ -342,14 +288,14 @@ async function generateNames(): Promise<void> {
         if (result.candidates && result.candidates.length > 0 &&
             result.candidates[0].content && result.candidates[0].content.parts &&
             result.candidates[0].content.parts.length > 0) {
-            const text = result.candidates[0].content.parts[0].text as string;
-            const nameLines = text.split('\n').filter(line => line.trim() !== '');
+            const text = result.candidates[0].content.parts[0].text;
+            const nameLines = text.split('\n').filter((line: string) => line.trim() !== '');
 
             if (nameLines.length === 0) {
                 namesErrorLabel.textContent = "No names generated. Please try again.";
                 namesErrorLabel.style.display = "block";
             } else {
-                nameLines.forEach((line, index) => {
+                nameLines.forEach((line: string, index: number) => {
                     const parts = line.split(',');
                     if (parts.length === 2) {
                         const firstName = parts[0].trim();
@@ -455,14 +401,19 @@ async function generateNames(): Promise<void> {
             namesErrorLabel.textContent = "Could not retrieve names. The AI response was empty or malformed. Please try again.";
             namesErrorLabel.style.display = "block";
         }
-    } catch (error: any) { // Explicitly type error as 'any' or 'unknown'
+    } catch (error: unknown) { // Explicitly type error as 'unknown'
         console.error("Error calling Gemini API:", error);
-        namesErrorLabel.textContent = `Error: Failed to fetch names. ${error.message || 'Please check your network connection.'}`;
+        let errorMessage = 'Error: Failed to fetch names.';
+        if (error instanceof Error) { // Check if it's an Error object
+            errorMessage += ` ${error.message}`;
+        }
+        namesErrorLabel.textContent = errorMessage;
         namesErrorLabel.style.display = "block";
     } finally {
         generateNamesSpinner.classList.add('d-none'); // Hide spinner
         generateNamesText.textContent = "Generate Names"; // Revert button text
     }
+        */
 }
 
 // --- Event Listeners Initialization (after all functions are defined) ---
