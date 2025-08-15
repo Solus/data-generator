@@ -33,6 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next-env.d.ts",
+    "src/types/**/*.ts",
     "docs/types/**/*.ts"
   ],
   "exclude": [

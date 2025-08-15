@@ -1,71 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CopyIcon } from '@radix-ui/react-icons';
+import { copyToClipboard } from '@/utils/clipboard';
 
 interface Name {
   firstName: string;
   lastName: string;
 }
 
-/**
- * Handles copying text to clipboard and provides visual feedback.
- * @param text The text to copy.
- * @param buttonElement The HTMLButtonElement that triggered the copy, for visual feedback.
- */
-const copyToClipboard = async (text: string, buttonElement: HTMLButtonElement): Promise<boolean> => {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (err: unknown) {
-    console.error('Failed to copy using Clipboard API:', err);
-    // Fallback to execCommand if modern API fails
-    const tempInput = document.createElement('textarea');
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    try {
-      const success = document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      return success;
-    } catch (fallbackErr: unknown) {
-      console.error('Failed to copy even with execCommand:', fallbackErr);
-      document.body.removeChild(tempInput);
-      return false;
-    }
-  }
-};
-
 const NamesGenerator: React.FC = () => {
   const [numNames, setNumNames] = useState<number>(10);
   const [names, setNames] = useState<Name[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
 
-  const handleCopy = async (text: string, buttonElement: HTMLButtonElement) => {
-    const iconElement = buttonElement.querySelector('i');
-    const originalIconClass = iconElement?.className;
-    
-    if (iconElement) {
-      iconElement.classList.remove('fa-copy');
-      iconElement.classList.add('fa-check');
-      iconElement.classList.add('text-green-500');
-    }
-
-    const success = await copyToClipboard(text, buttonElement);
+  const handleCopy = async (text: string, key: string) => {
+    const success = await copyToClipboard(text);
     if (!success) {
       setError('Failed to copy. Please copy manually.');
     } else {
       setError(null);
+      setCopyStatus(prev => ({ ...prev, [key]: 'success' }));
+      setTimeout(() => {
+        setCopyStatus(prev => ({ ...prev, [key]: 'idle' }));
+      }, 1000);
     }
-    
-    setTimeout(() => {
-      if (iconElement) {
-        iconElement.classList.remove('fa-check');
-        iconElement.classList.add('fa-copy');
-        iconElement.classList.remove('text-green-500');
-      }
-    }, 1000);
   };
 
   const generateNames = async () => {
@@ -133,14 +93,14 @@ const NamesGenerator: React.FC = () => {
         <button
           onClick={generateNames}
           disabled={loading}
-          className='py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400'
+          className='py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 dark:disabled:bg-gray-600'
         >
           {loading ? 'Generating...' : 'Generate Names'}
         </button>
       </div>
 
-      {loading && <p className='text-center text-blue-500'>Generating names...</p>}
-      {error && <p className='text-center text-red-500'>{error}</p>}
+      {loading && <p className='text-center text-blue-500 dark:text-blue-400'>Generating names...</p>}
+      {error && <p className='text-center text-red-500 dark:text-red-400'>{error}</p>}
 
       {!loading && names.length > 0 && (
         <div className='names-grid'>
@@ -152,33 +112,41 @@ const NamesGenerator: React.FC = () => {
               <div className='names-cell group relative'>
                 <span className='p-2'>{name.firstName}</span>
                 <button
-                  onClick={(e) => handleCopy(name.firstName, e.currentTarget)}
+                  onClick={() => handleCopy(name.firstName, `${index}-firstName`)}
                   className='absolute right-1 top-1/2 -translate-y-1/2 p-1 text-sm bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-700'
                   title={`Copy ${name.firstName}`}
                 >
-                  <i className='fas fa-copy'></i>
+                  {copyStatus[`${index}-firstName`] === 'success' ? (
+                    <i className="fas fa-check text-green-500"></i>
+                  ) : (
+                    <i className='fas fa-copy'></i>
+                  )}
                 </button>
               </div>
               <div className='names-cell group relative'>
                 <span className='p-2'>{name.lastName}</span>
                 <button
-                  onClick={(e) => handleCopy(name.lastName, e.currentTarget)}
+                  onClick={() => handleCopy(name.lastName, `${index}-lastName`)}
                   className='absolute right-1 top-1/2 -translate-y-1/2 p-1 text-sm bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-700'
                   title={`Copy ${name.lastName}`}
                 >
-                  <i className='fas fa-copy'></i>
+                  {copyStatus[`${index}-lastName`] === 'success' ? (
+                    <i className="fas fa-check text-green-500"></i>
+                  ) : (
+                    <i className='fas fa-copy'></i>
+                  )}
                 </button>
               </div>
               <div className='names-cell flex justify-center items-center space-x-2'>
                 <button
-                  onClick={(e) => handleCopy(`${name.firstName} ${name.lastName}`, e.currentTarget)}
+                  onClick={() => handleCopy(`${name.firstName} ${name.lastName}`, `${index}-fullName`)}
                   className='py-1 px-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors'
                   title={`Copy ${name.firstName} ${name.lastName}`}
                 >
                   I P
                 </button>
                 <button
-                  onClick={(e) => handleCopy(`${name.lastName} ${name.firstName}`, e.currentTarget)}
+                  onClick={() => handleCopy(`${name.lastName} ${name.firstName}`, `${index}-fullNameRev`)}
                   className='py-1 px-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors'
                   title={`Copy ${name.lastName} ${name.firstName}`}
                 >

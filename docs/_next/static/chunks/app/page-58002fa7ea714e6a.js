@@ -1,1 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[974],{2868:(e,u,s)=>{"use strict";s.r(u),s.d(u,{default:()=>r});var n=s(8999),t=s(2115);function r(){let e=(0,n.useRouter)();return(0,t.useEffect)(()=>{e.push("/iban")},[e]),null}},9722:(e,u,s)=>{Promise.resolve().then(s.bind(s,2868))}},e=>{e.O(0,[441,964,358],()=>e(e.s=9722)),_N_E=e.O()}]);

@@ -24,6 +24,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "^9.33.0",
+    "tailwindcss": "^4.1.12",
     "typescript": "latest"
   }
 }

@@ -16,6 +16,11 @@
 # next.js
 /.next/
 /out/
+#/docs/
+
+# Caching directories
+cache
+server
 
 # production
 /build
