@@ -21,7 +21,7 @@ export default function Navigation() {
             <li key={item.href}>
               <Link href={item.href} passHref>
                 <button
-                  className={`inline-block p-3 text-lg font-medium transition-colors rounded-t-lg ${
+                  className={`inline-block p-3 text-lg font-medium transition-colors rounded-t-lg cursor-pointer ${
                     isActive
                       ? 'bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-700'

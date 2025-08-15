@@ -24,12 +24,14 @@ const IbanGenerator: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isRandomSelected, setIsRandomSelected] = useState<boolean>(true);
 
-  const generateAndSetIban = () => {
+  const generateAndSetIban = (overrideBankKey?: string) => {
     setError(null);
 
-    let bankKeyForGeneration = selectedBankKey;
+    let bankKeyForGeneration = overrideBankKey || selectedBankKey;
 
-    if (isRandomSelected) {
+    // This part handles the "random" case, which should only trigger
+    // when the function is called without a specific key (e.g., from the button or on initial load)
+    if (!overrideBankKey && isRandomSelected) {
       const bankKeys = Object.keys(bankData);
       const randomKey = bankKeys[Math.floor(Math.random() * bankKeys.length)];
       bankKeyForGeneration = randomKey;
@@ -38,7 +40,7 @@ const IbanGenerator: React.FC = () => {
     }
 
     if (!bankKeyForGeneration || !bankData[bankKeyForGeneration]) {
-      setError('Please select a bank or check the random option.');
+      setError('Please select a bank or use the "Random" option.');
       setGeneratedIban('');
       return;
     }
@@ -63,6 +65,7 @@ const IbanGenerator: React.FC = () => {
   const handleBankChange = (key: string) => {
     setSelectedBankKey(key);
     setIsRandomSelected(false); // Uncheck random when a bank is selected manually
+    generateAndSetIban(key);
   };
 
   return (
@@ -84,7 +87,7 @@ const IbanGenerator: React.FC = () => {
                 </span>
               )}
               renderOption={(key, option) => (
-                <div className="flex justify-between">
+                <div className="flex justify-between cursor-pointer">
                   <span className="font-medium text-gray-900 dark:text-gray-100">{option.name}</span>
                   <span className="text-gray-600 dark:text-gray-400">{option.vbdi}</span>
                 </div> 
@@ -105,9 +108,9 @@ const IbanGenerator: React.FC = () => {
                   setSelectedBankKey('');
                 }
               }}
-              className="h-4 w-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
+              className="h-4 w-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 cursor-pointer"
             />
-            <label htmlFor="random-iban" className="ml-2 font-bold text-gray-700 dark:text-gray-300">Random</label>
+            <label htmlFor="random-iban" className="ml-2 font-bold text-gray-700 dark:text-gray-300 cursor-pointer">Random</label>
           </div>
         </div>
       </div>
@@ -132,7 +135,7 @@ const IbanGenerator: React.FC = () => {
           </span>
           <CopyButton
             textToCopy={generatedIban}
-            className="w-12 h-12 rounded-full"
+            className="w-12 h-12 rounded-full cursor-pointer"
             title="Copy IBAN"
             onNoText={() => setError('No IBAN to copy. Please generate one first.')}
             onCopyError={(message) => setError(message)}
@@ -143,8 +146,8 @@ const IbanGenerator: React.FC = () => {
       
       {/* Generate Button */}
       <button
-        onClick={generateAndSetIban}
-        className="w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
+        onClick={() => generateAndSetIban()}
+        className="w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors cursor-pointer"
       >
         <i className="fas fa-key mr-2"></i> Generate IBAN
       </button>
