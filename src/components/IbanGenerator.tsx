@@ -18,11 +18,14 @@ const bankData: Record<string, Bank> = {
   rba: { name: 'Raiffeisenbank Hrvatska', vbdi: '2484008' },
 };
 
+import { useLocale } from '@/utils/locale';
+
 const IbanGenerator: React.FC = () => {
   const [selectedBankKey, setSelectedBankKey] = useState<string>('');
   const [generatedIban, setGeneratedIban] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isRandomSelected, setIsRandomSelected] = useState<boolean>(true);
+  const { strings } = useLocale();
 
   const generateAndSetIban = (overrideBankKey?: string) => {
     setError(null);
@@ -40,7 +43,7 @@ const IbanGenerator: React.FC = () => {
     }
 
     if (!bankKeyForGeneration || !bankData[bankKeyForGeneration]) {
-      setError('Please select a bank or use the "Random" option.');
+      setError(strings.selectBankOrRandom);
       setGeneratedIban('');
       return;
     }
@@ -73,17 +76,17 @@ const IbanGenerator: React.FC = () => {
       {/* Bank Selection & Random Checkbox */}
       <div className="flex flex-col space-y-2">
         <label className="flex items-center font-bold">
-          <i className="fas fa-university mr-2"></i> Select Bank:
+          <i className="fas fa-university mr-2"></i> {strings.selectBankLabel}
         </label>
         <div className="flex items-center space-x-4">
           <div className="flex-1">
-            <CustomDropdown
+    <CustomDropdown
               options={bankData}
               value={selectedBankKey}
               onChange={handleBankChange} // Use the new handler here
               renderDisplay={(key) => (
                 <span className={key ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}>
-                  {key ? `${bankData[key]?.name} (${bankData[key]?.vbdi})` : '-- Select a Bank --'}
+      {key ? `${bankData[key]?.name} (${bankData[key]?.vbdi})` : strings.selectBankPlaceholder}
                 </span>
               )}
               renderOption={(key, option) => (
@@ -110,7 +113,7 @@ const IbanGenerator: React.FC = () => {
               }}
               className="h-4 w-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 cursor-pointer"
             />
-            <label htmlFor="random-iban" className="ml-2 font-bold text-gray-700 dark:text-gray-300 cursor-pointer">Random</label>
+            <label htmlFor="random-iban" className="ml-2 font-bold text-gray-700 dark:text-gray-300 cursor-pointer">{strings.randomBank}</label>
           </div>
         </div>
       </div>
@@ -118,7 +121,7 @@ const IbanGenerator: React.FC = () => {
       {/* Generated IBAN Display */}
       <div className="flex flex-col space-y-2">
         <label className="flex items-center font-bold">
-          <i className="fas fa-file-invoice-with-watermark mr-2"></i> Generated IBAN:
+          <i className="fas fa-file-invoice-with-watermark mr-2"></i> {strings.generatedIbanLabel}
         </label>
         <div className="flex items-center space-x-2">
           <span className="flex-1 p-4 text-2xl text-center font-mono rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
@@ -136,8 +139,8 @@ const IbanGenerator: React.FC = () => {
           <CopyButton
             textToCopy={generatedIban}
             className="w-12 h-12 rounded-full cursor-pointer"
-            title="Copy IBAN"
-            onNoText={() => setError('No IBAN to copy. Please generate one first.')}
+            title={strings.copyIban}
+            onNoText={() => setError(strings.noIbanToCopy)}
             onCopyError={(message) => setError(message)}
           />
         </div>
@@ -149,7 +152,7 @@ const IbanGenerator: React.FC = () => {
         onClick={() => generateAndSetIban()}
         className="w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors cursor-pointer"
       >
-        <i className="fas fa-key mr-2"></i> Generate IBAN
+        <i className="fas fa-key mr-2"></i> {strings.generateIban}
       </button>
     </div>
   );

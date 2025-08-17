@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { copyToClipboard } from '@/utils/clipboard';
+import { useLocale } from '@/utils/locale';
 
 type CopyFeedback = 'idle' | 'success' | 'error';
 
@@ -17,12 +18,15 @@ interface CopyButtonProps {
 const CopyButton: React.FC<CopyButtonProps> = ({
   textToCopy,
   className,
-  title = 'Copy',
+  title,
   onCopySuccess,
   onCopyError,
   onNoText,
 }) => {
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback>('idle');
+  const { strings } = useLocale();
+
+  const resolvedTitle = title ?? strings.copy;
 
   const handleCopy = async () => {
     if (!textToCopy) {
@@ -37,7 +41,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
       setTimeout(() => setCopyFeedback('idle'), 1000);
     } else {
       setCopyFeedback('error');
-      onCopyError?.('Failed to copy. Please copy manually.');
+      onCopyError?.(strings.copyFailed);
     }
   };
 
@@ -45,7 +49,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   const feedbackClassName = copyFeedback === 'success' ? 'bg-green-500' : 'bg-blue-600 hover:bg-blue-700';
 
   return (
-    <button onClick={handleCopy} className={`${baseClassName} ${feedbackClassName} ${className}`} title={title}>
+    <button onClick={handleCopy} className={`${baseClassName} ${feedbackClassName} ${className}`} title={resolvedTitle}>
       {copyFeedback === 'success' ? <i className="fas fa-check"></i> : <i className="fas fa-copy"></i>}
     </button>
   );

@@ -2,15 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-const navItems = [
-  { href: '/iban', icon: 'fas fa-money-check-dollar', label: 'IBAN Generator' },
-  { href: '/oib', icon: 'fas fa-id-card', label: 'OIB Generator' },
-  { href: '/names', icon: 'fas fa-users', label: 'Names' },
-];
+import { useLocale } from '@/utils/locale';
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { strings } = useLocale();
+
+  const navItems = [
+    { href: '/iban', icon: 'fas fa-money-check-dollar', label: strings.ibanGenerator },
+    { href: '/oib', icon: 'fas fa-id-card', label: strings.oibGenerator },
+  { href: '/names', icon: 'fas fa-users', label: strings.namesGenerator },
+  ];
 
   return (
     <nav>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { copyToClipboard } from '@/utils/clipboard';
+import { useLocale } from '@/utils/locale';
 
 interface Name {
   firstName: string;
@@ -16,38 +17,7 @@ const NamesGenerator: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
-  const [lang, setLang] = useState<'hr' | 'en'>('hr');
-
-  const L: Record<string, any> = {
-    en: {
-      numberOfNames: 'Number of Names:',
-      generateNames: 'Generate Names',
-      generating: 'Generating names…',
-      actions: 'Actions',
-      moreOptions: 'More copy options',
-      copyText: (v: string) => `Copy "${v}"`,
-      decrease: 'Decrease number of names',
-      increase: 'Increase number of names',
-      aiTitle: 'Generate names using AI',
-      firstNameHeader: 'First Name',
-      lastNameHeader: 'Last Name',
-      openActions: 'Open actions',
-    },
-    hr: {
-      numberOfNames: 'Broj imena:',
-      generateNames: 'Generiraj imena',
-      generating: 'Generiranje imena…',
-      actions: 'Akcije',
-      moreOptions: 'Više opcija kopiranja',
-      copyText: (v: string) => `Kopiraj "${v}"`,
-      decrease: 'Smanji broj imena',
-      increase: 'Povećaj broj imena',
-      aiTitle: 'Generiraj imena pomoću AI',
-      firstNameHeader: 'Ime',
-      lastNameHeader: 'Prezime',
-      openActions: 'Otvori akcije',
-    },
-  };
+  const { strings } = useLocale();
 
   const handleCopy = async (text: string, key: string) => {
     const success = await copyToClipboard(text);
@@ -74,7 +44,7 @@ const NamesGenerator: React.FC = () => {
     setError(null);
     setLoading(true);
 
-    try {
+  try {
       const response = await fetch('/api/generate-names', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,7 +67,7 @@ const NamesGenerator: React.FC = () => {
         });
         setNames(newNames);
       } else {
-        const errorMessage = result.error?.message || 'No names generated. Please try again.';
+        const errorMessage = result.error?.message || strings.noNamesGenerated;
         setError(errorMessage);
         setNames([]);
       }
@@ -119,14 +89,14 @@ const NamesGenerator: React.FC = () => {
   <div className='flex items-end space-x-4 mb-4'>
         <div className='flex-1'>
           <label htmlFor='numNames' className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
-            {L[lang].numberOfNames}
+            {strings.numberOfNames}
           </label>
           <div className='mt-1 inline-flex items-center rounded-md shadow-sm bg-white dark:bg-gray-800'>
             <button
               type='button'
               onClick={decrementNum}
               className='px-3 py-2 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100'
-              aria-label='Decrease number of names'
+              aria-label={strings.decrease}
             >
               −
             </button>
@@ -140,40 +110,32 @@ const NamesGenerator: React.FC = () => {
               min={1}
               max={50}
               className='w-20 text-center px-2 py-2 border-t border-b border-gray-300 dark:border-gray-700 focus:outline-none'
-              aria-label='Number of names'
+              aria-label={strings.numberOfNames}
             />
             <button
               type='button'
               onClick={incrementNum}
               className='px-3 py-2 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100'
-              aria-label='Increase number of names'
+              aria-label={strings.increase}
             >
               +
             </button>
           </div>
         </div>
         <div className='flex items-center space-x-2'>
-          <button
-            onClick={generateNames}
-            disabled={loading}
-            aria-busy={loading}
-            className='inline-flex items-center gap-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 dark:disabled:bg-gray-600'
-            title={L[lang].aiTitle}
-          >
-            {/* Heroicon sparkles (AI/magic indicator) */}
-            <SparklesIcon className='w-5 h-5' aria-hidden='true' />
-            <span>{L[lang].generateNames}</span>
-          </button>
-
-          <select
-            value={lang}
-            onChange={(e) => setLang(e.target.value as 'hr' | 'en')}
-            aria-label='Select language'
-            className='ml-2 rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-sm'
-          >
-            <option value='hr'>HR</option>
-            <option value='en'>EN</option>
-          </select>
+          <div className='flex items-center space-x-2'>
+            <button
+              onClick={generateNames}
+              disabled={loading}
+              aria-busy={loading}
+              className='inline-flex items-center gap-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 dark:disabled:bg-gray-600'
+              title={strings.aiTitle}
+            >
+              {/* Heroicon sparkles (AI/magic indicator) */}
+              <SparklesIcon className='w-5 h-5' aria-hidden='true' />
+              <span>{strings.generateNames}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -183,7 +145,7 @@ const NamesGenerator: React.FC = () => {
             <svg className='animate-spin w-6 h-6 text-blue-600 dark:text-blue-400' viewBox='0 0 24 24' fill='none' stroke='currentColor' xmlns='http://www.w3.org/2000/svg' aria-hidden>
               <path d='M21 12a9 9 0 11-18 0' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
             </svg>
-            <span className='text-sm text-blue-600 dark:text-blue-400'>{L[lang].generating}</span>
+            <span className='text-sm text-blue-600 dark:text-blue-400'>{strings.generating}</span>
           </div>
 
           {/* Skeleton rows to indicate incoming data */}
@@ -199,9 +161,9 @@ const NamesGenerator: React.FC = () => {
       {!loading && names.length > 0 && (
         <div className='grid grid-cols-[1fr_1fr_auto] gap-x-4 gap-y-2 items-center mt-6'>
           {/* Headers */}
-          <div className='font-bold p-2 text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{L[lang].firstNameHeader}</div>
-          <div className='font-bold p-2 text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{L[lang].lastNameHeader}</div>
-          <div className='font-bold p-2 text-center text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{L[lang].actions}</div>
+          <div className='font-bold p-2 text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{strings.firstNameHeader}</div>
+          <div className='font-bold p-2 text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{strings.lastNameHeader}</div>
+          <div className='font-bold p-2 text-center text-gray-600 dark:text-gray-400 uppercase tracking-wider text-sm'>{strings.actions}</div>
 
           {/* Data Rows */}
           {names.map((name, index) => (
@@ -212,7 +174,7 @@ const NamesGenerator: React.FC = () => {
                 <button
                   onClick={() => handleCopy(name.firstName, `${index}-firstName`)}
                   className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-sm bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-700'
-                  title={L[lang].copyText(name.firstName)}
+                  title={strings.copyText(name.firstName)}
                 >
                   {copyStatus[`${index}-firstName`] === 'success' ? (
                     <i className='fas fa-check text-green-500'></i>
@@ -228,7 +190,7 @@ const NamesGenerator: React.FC = () => {
                 <button
                   onClick={() => handleCopy(name.lastName, `${index}-lastName`)}
                   className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-sm bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity dark:bg-gray-700'
-                  title={L[lang].copyText(name.lastName)}
+                  title={strings.copyText(name.lastName)}
                 >
                   {copyStatus[`${index}-lastName`] === 'success' ? (
                     <i className='fas fa-check text-green-500'></i>
@@ -286,7 +248,7 @@ const NamesGenerator: React.FC = () => {
                         }}
                         className='w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700'
                       >
-                        {L[lang].copyText(`${name.lastName} ${name.firstName}`)}
+                        {strings.copyText(`${name.lastName} ${name.firstName}`)}
                       </button>
                     </div>
                   )}
