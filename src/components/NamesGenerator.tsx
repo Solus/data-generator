@@ -16,7 +16,7 @@ const NamesGenerator: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+
   const { strings } = useLocale();
 
   const handleCopy = async (text: string, key: string) => {
@@ -200,59 +200,39 @@ const NamesGenerator: React.FC = () => {
                 </button>
               </div>
 
-              {/* Actions Cell - Primary copy button + dropdown for alternate order */}
-              <div className='flex justify-center items-center'>
-                <div
-                  className='relative inline-flex rounded-md shadow-sm'
-                  onBlur={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpenDropdown(null);
-                  }}
+              {/* Actions Cell - two copy buttons (First Last / Last First) */}
+              <div className='flex justify-center items-center space-x-2'>
+                <button
+                  onClick={() => handleCopy(`${name.firstName} ${name.lastName}`, `${index}-fullName`)}
+                  title={strings.copyText(`${name.firstName} ${name.lastName}`)}
+                  aria-label={`Copy ${name.firstName} ${name.lastName}`}
+                  className='inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 >
-                  <button
-                    onClick={() => handleCopy(`${name.firstName} ${name.lastName}`, `${index}-fullName`)}
-                    title={`Copy "${name.firstName} ${name.lastName}"`}
-                    aria-label={`Copy ${name.firstName} ${name.lastName}`}
-                    className='p-2 rounded-l-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 inline-flex items-center justify-center'
-                  >
-                    {copyStatus[`${index}-fullName`] === 'success' ? (
-                      <svg className='w-5 h-5 text-green-200' viewBox='0 0 24 24' fill='none' stroke='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                        <path d='M5 13l4 4L19 7' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
-                      </svg>
-                    ) : (
-                      <svg className='w-5 h-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                        <rect x='9' y='9' width='13' height='13' rx='2' />
-                        <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
-                      </svg>
-                    )}
-                    <span className='sr-only'>{`Copy ${name.firstName} ${name.lastName}`}</span>
-                  </button>
-
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === index ? null : index)}
-                    aria-haspopup='menu'
-                    aria-expanded={openDropdown === index}
-                    title='More copy options'
-                    className='py-2 px-2 rounded-r-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  >
-                    <svg className='w-4 h-4' viewBox='0 0 20 20' fill='none' stroke='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                      <path d='M6 8l4 4 4-4' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
-                    </svg>
-                  </button>
-
-                  {openDropdown === index && (
-                    <div className='absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10'>
-                      <button
-                        onClick={() => {
-                          handleCopy(`${name.lastName} ${name.firstName}`, `${index}-fullNameRev`);
-                          setOpenDropdown(null);
-                        }}
-                        className='w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700'
-                      >
-                        {strings.copyText(`${name.lastName} ${name.firstName}`)}
-                      </button>
-                    </div>
+                  {copyStatus[`${index}-fullName`] === 'success' ? (
+                    <i className='fas fa-check text-green-200'></i>
+                  ) : (
+                    <i className='fas fa-copy' aria-hidden='true'></i>
                   )}
-                </div>
+                  <span className='sr-only'>{strings.copyText(`${name.firstName} ${name.lastName}`)}</span>
+                </button>
+
+                <button
+                  onClick={() => handleCopy(`${name.lastName} ${name.firstName}`, `${index}-fullNameRev`)}
+                  title={strings.copyText(`${name.lastName} ${name.firstName}`)}
+                  aria-label={`Copy ${name.lastName} ${name.firstName}`}
+                  className='inline-flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                >
+                  {copyStatus[`${index}-fullNameRev`] === 'success' ? (
+                    <i className='fas fa-check text-green-600'></i>
+                  ) : (
+                    /* Stacked FA icons: copy with swap arrows */
+                    <span className='relative w-4 h-4 flex items-center justify-center' aria-hidden='true'>
+                      <i className='fas fa-copy text-gray-600'></i>
+                      <i className='fas fa-exchange-alt absolute text-gray-800' style={{ fontSize: '0.5rem' }}></i>
+                    </span>
+                  )}
+                  <span className='sr-only'>{strings.copyText(`${name.lastName} ${name.firstName}`)}</span>
+                </button>
               </div>
             </React.Fragment>
           ))}
