@@ -45,12 +45,15 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     }
   };
 
-  const baseClassName = 'flex items-center justify-center text-white transition-colors';
-  const feedbackClassName = copyFeedback === 'success' ? 'bg-green-500' : 'bg-blue-600 hover:bg-blue-700';
+  const baseClassName = 'flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900';
+  const feedbackClassName =
+    copyFeedback === 'success'
+      ? 'bg-teal-500 text-white animate-pulse'
+      : 'bg-transparent text-teal-600 dark:text-teal-400 hover:bg-slate-200 dark:hover:bg-slate-700/60';
 
   return (
     <button onClick={handleCopy} className={`${baseClassName} ${feedbackClassName} ${className}`} title={resolvedTitle}>
-      {copyFeedback === 'success' ? <i className="fas fa-check"></i> : <i className="fas fa-copy"></i>}
+      {copyFeedback === 'success' ? <i className="fas fa-check"></i> : <i className="far fa-copy"></i>}
     </button>
   );
 };

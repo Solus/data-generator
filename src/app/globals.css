@@ -21,8 +21,15 @@
 }
 
 body {
-  background-color: var(--background);
+  min-height: 100vh;
+  background: radial-gradient(120% 120% at 10% 20%, #d2f8f4 0%, #e6f2ff 38%, #f6f7fb 70%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.material-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 30px 60px -25px rgba(15, 119, 166, 0.35);
 }
 
