@@ -32,7 +32,6 @@ const hr = {
   tabIban: 'IBAN',
   tabOib: 'OIB',
   tabNames: 'Imena',
-  namesSubtitle: 'Hrvatska imena i prezimena, do 50 odjednom.',
   testDataNote: 'Testni podaci. Brojevi su formalno ispravni, ali ne pripadaju stvarnim računima ni osobama.',
   sheetLabel: 'List',
   typeLabel: 'Vrsta',

@@ -31,7 +31,6 @@ const en = {
   tabIban: 'IBAN',
   tabOib: 'OIB',
   tabNames: 'Names',
-  namesSubtitle: 'Croatian first and last names, up to 50 at a time.',
   testDataNote: 'Test data. Numbers are formally valid but do not belong to real accounts or people.',
   sheetLabel: 'Sheet',
   typeLabel: 'Type',
