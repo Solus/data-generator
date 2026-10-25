@@ -184,9 +184,18 @@ const NamesGenerator: React.FC = () => {
         <div className="flex justify-center">
           <div
             role="status"
-            className="text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-600/40 rounded-md px-3 py-1.5 leading-snug"
+            className="flex items-start gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-600/40 rounded-md pl-3 pr-1.5 py-1.5 leading-snug"
           >
-            {notice}
+            <span>{notice}</span>
+            <button
+              type="button"
+              onClick={() => setNotice(null)}
+              aria-label={strings.dismiss}
+              title={strings.dismiss}
+              className="shrink-0 rounded px-1.5 leading-snug hover:bg-amber-100 dark:hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            >
+              <i className="fas fa-xmark" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
       )}

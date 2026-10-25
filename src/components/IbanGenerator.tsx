@@ -192,6 +192,20 @@ const IbanGenerator: React.FC = () => {
           </div>
         </div>
 
+        {/* Legend for the coloured segments */}
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600 dark:text-slate-400">
+          {[
+            [strings.ibanLegendCheck, 'bg-amber-700 dark:bg-amber-300'],
+            [strings.ibanLegendBank, 'bg-cyan-800 dark:bg-cyan-300'],
+            [strings.ibanLegendAccount, 'bg-fuchsia-700 dark:bg-fuchsia-300'],
+          ].map(([label, swatch]) => (
+            <li key={swatch} className="inline-flex items-center gap-1.5">
+              <span className={`h-2 w-2 rounded-full ${swatch}`} aria-hidden="true"></span>
+              {label}
+            </li>
+          ))}
+        </ul>
+
         {error && (
           <div
             role="alert"

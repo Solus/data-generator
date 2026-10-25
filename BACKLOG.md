@@ -3,8 +3,7 @@
 UX improvements and open questions found in the June UX review but not yet done.
 
 ## UX
-- **IBAN colour segments have no legend** (country / check digits / bank / account number).
-- **Notice for built-in names isn't dismissible** and stays until the next generate.
+- Names: per-name copy buttons on touch devices are untested on a real device (rule is in place).
 
 ## Unverified
 - Copy confirmation behaviour, keyboard navigation and contrast ratios haven't been audited.
