@@ -7,48 +7,48 @@
    utilities below (bg-sheet, text-muted, ...) and never need `dark:` variants for colour. */
 :root {
   color-scheme: light;
-  --paper: #f4f4f2; /* page ground */
-  --sheet: #ffffff; /* the framed sheet */
-  --hover: #f4f4f2; /* hover / highlighted / "just copied" tint: slightly off the sheet in either mode */
-  --ink: #16181d; /* primary text, primary button */
-  --ink-soft: #3a3f47;
-  --muted: #5f6670; /* secondary text (>= 4.5:1 on sheet) */
-  --line: #dddfe3; /* hairlines */
-  --frame: #c9ccd1; /* sheet border */
-  --control: #c9ccd1; /* input / select borders */
-  --rule: #16181d; /* strong rule above results */
-  --dim: #9aa0a8; /* dimension lines and ticks */
-  --cross: #9aa0a8; /* corner crosshairs */
-  --accent: #c8391f; /* vermilion: active marker, first IBAN segment */
-  --accent-strong: #a32d18; /* hover of accent-filled buttons */
+  --paper: #eceff4; /* page ground */
+  --sheet: #fcfcfa; /* the framed sheet */
+  --hover: #eceff4; /* hover / highlighted / "just copied" tint: slightly off the sheet in either mode */
+  --ink: #16233f; /* primary text, primary button */
+  --ink-soft: #34415c;
+  --muted: #566282; /* secondary text (>= 4.5:1 on sheet) */
+  --line: #d5dbe8; /* hairlines */
+  --frame: #c4cbda; /* sheet border */
+  --control: #c4cbda; /* input / select borders */
+  --rule: #16233f; /* strong rule above results */
+  --dim: #9aa3b8; /* dimension lines and ticks */
+  --cross: #9aa3b8; /* corner crosshairs */
+  --accent: #a85a0c; /* ochre: active marker, first IBAN segment */
+  --accent-strong: #8a4a08; /* hover of accent-filled buttons */
   --on-accent: #ffffff; /* text on accent-filled buttons */
-  --panel: #f3f6fa; /* tinted result panel */
-  --panel-line: #dce3eb;
-  --accent-2: #2f5d8a; /* blue: bank code, links */
+  --panel: #eff2f8; /* tinted result panel */
+  --panel-line: #d5dbe8;
+  --accent-2: #33589a; /* blue: bank code, links */
   --on-ink: #ffffff; /* text on the primary button */
 }
 
 .dark {
   color-scheme: dark; /* native controls and scrollbars follow the theme */
-  --paper: #0c0d0f;
-  --sheet: #141619;
-  --hover: #252a31; /* lighter than the sheet (the page ground --paper is darker, so it can't be reused here) */
-  --ink: #ecedef;
-  --ink-soft: #c4c8ce;
-  --muted: #9aa1ab;
-  --line: #262a30;
-  --frame: #2e3238;
-  --control: #3a3f47;
-  --rule: #d8dade;
-  --dim: #6b7280;
-  --cross: #4a4f57;
-  --accent: #ff6f55;
-  --accent-strong: #ff8a73;
-  --on-accent: #141619; /* the dark-mode accent is light, so text on it is dark */
-  --panel: #1a1f26;
-  --panel-line: #2a313b;
-  --accent-2: #7fb2ea;
-  --on-ink: #141619;
+  --paper: #0a0d14;
+  --sheet: #101624;
+  --hover: #1f2940; /* lighter than the sheet (the page ground --paper is darker, so it can't be reused here) */
+  --ink: #e8ecf5;
+  --ink-soft: #bfc8dc;
+  --muted: #95a0ba;
+  --line: #202a3f;
+  --frame: #2a3550;
+  --control: #36425f;
+  --rule: #d3d9e8;
+  --dim: #5e6a87;
+  --cross: #3a4663;
+  --accent: #e8a04a;
+  --accent-strong: #f0b46a;
+  --on-accent: #101624; /* the dark-mode accent is light, so text on it is dark */
+  --panel: #151d30;
+  --panel-line: #232e47;
+  --accent-2: #8fb0f0;
+  --on-ink: #101624;
 }
 
 @theme inline {
