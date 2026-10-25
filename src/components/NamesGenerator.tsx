@@ -1,17 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SparklesIcon } from '@heroicons/react/24/solid';
 import { copyToClipboard } from '@/utils/clipboard';
 import { generateLocalNames } from '@/utils/names';
 import { useLocale } from '@/utils/locale';
 import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
-import ShortcutHint from './ShortcutHint';
+import PrimaryButton from './PrimaryButton';
+import { pad } from './PageIntro';
+import { CheckIcon, CloseIcon, CopyIcon } from './icons';
 
 interface Name {
   firstName: string;
   lastName: string;
 }
+
+const outlineButton =
+  'inline-flex h-11 items-center gap-2 rounded-[2px] border border-ink px-3.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-on-ink sm:h-10';
 
 const NamesGenerator: React.FC = () => {
   // null while the field is empty, so the user can clear it and type a new number (restored to 10 on blur).
@@ -21,7 +25,7 @@ const NamesGenerator: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
+  const [copied, setCopied] = useState<string | null>(null); // key of the item that was just copied
 
   const { strings } = useLocale();
 
@@ -36,10 +40,8 @@ const NamesGenerator: React.FC = () => {
       setError(strings.copyFailed);
     } else {
       setError(null);
-      setCopyStatus(prev => ({ ...prev, [key]: 'success' }));
-      setTimeout(() => {
-        setCopyStatus(prev => ({ ...prev, [key]: 'idle' }));
-      }, 1000);
+      setCopied(key);
+      setTimeout(() => setCopied(current => (current === key ? null : current)), 1500);
     }
   };
 
@@ -100,205 +102,140 @@ const NamesGenerator: React.FC = () => {
     if (!loading) generateNames();
   });
 
+  const stepButton = 'flex h-12 w-11 items-center justify-center text-xl text-ink hover:bg-paper sm:w-[46px]';
+
   return (
-    <div className="space-y-6">
-      {/* Count + Generate */}
-      <div className="space-y-3">
-        <label className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
-          <i className="fas fa-users mr-2 text-gray-600 dark:text-gray-400"></i>
-          {strings.numberOfNames}
-        </label>
-        <div className="flex flex-wrap items-end gap-6">
-          <div>
-            <div className="inline-flex items-stretch rounded-xl overflow-hidden border border-teal-200 dark:border-slate-700 ring-1 ring-inset ring-teal-100 dark:ring-slate-700/60 bg-teal-50 dark:bg-slate-800">
-              <button
-                type="button"
-                onClick={decrementNum}
-                className="px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 hover:bg-teal-100 dark:hover:bg-slate-700/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                aria-label={strings.decrease}
-              >
-                −
-              </button>
-              <input
-                id="numNames"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={numNames ?? ''}
-                onChange={onNumChange}
-                onBlur={() => setNumNames(n => n ?? 10)}
-                min={1}
-                max={50}
-                className="w-24 text-center px-2 py-2 bg-transparent font-mono text-gray-900 dark:text-gray-100 focus:outline-none"
-                aria-label={strings.numberOfNames}
-              />
-              <button
-                type="button"
-                onClick={incrementNum}
-                className="px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 hover:bg-teal-100 dark:hover:bg-slate-700/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                aria-label={strings.increase}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <button
-            onClick={generateNames}
-            disabled={loading}
-            aria-busy={loading}
-            aria-keyshortcuts="G"
-            className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-600
-            dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-500 dark:text-slate-100/90
-            font-semibold shadow-sm shadow-teal-500/20 transition-colors
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2
-            focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 disabled:bg-gray-400 dark:disabled:bg-gray-600"
-            title={strings.aiTitle}
-          >
-            <SparklesIcon className="w-5 h-5 -rotate-12 opacity-90" aria-hidden="true" />
-            <span className="tracking-wide">{strings.generateNames}</span>
-            <ShortcutHint />
-          </button>
-        </div>
-      </div>
-
-      {loading && (
-        <div className="mt-2 flex flex-col items-center space-y-4">
-          <div className="inline-flex items-center gap-2">
-            <svg className="animate-spin w-6 h-6 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
-              <path d="M21 12a9 9 0 1 1-18 0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="text-sm text-teal-600 dark:text-teal-400">{strings.generating}</span>
-          </div>
-          <div className="w-full max-w-2xl space-y-2">
-            <div className="h-9 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
-            <div className="h-9 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
-            <div className="h-9 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
+    <div className="mt-7">
+      {/* Count + generate + bulk copy */}
+      <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-7">
+        <div className="flex flex-col gap-2">
+          <span id="count-label" className="text-sm font-medium text-ink-soft">{strings.countLabel}</span>
+          <div role="group" aria-labelledby="count-label" className="flex h-12 w-fit rounded-[2px] border border-control">
+            <button type="button" onClick={decrementNum} aria-label={strings.decrease} className={`${stepButton} border-r border-control`}>−</button>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={numNames ?? ''}
+              onChange={onNumChange}
+              onBlur={() => setNumNames(n => n ?? 10)}
+              aria-labelledby="count-label"
+              className="w-16 bg-transparent text-center font-mono text-base text-ink focus:outline-none"
+            />
+            <button type="button" onClick={incrementNum} aria-label={strings.increase} className={`${stepButton} border-l border-control`}>+</button>
           </div>
         </div>
-      )}
 
-      {error && (
-        <div className="flex justify-center">
-          <div
-            role="alert"
-            className="text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-600/40 rounded-md px-3 py-1.5 leading-snug"
-          >
-            {error}
-          </div>
-        </div>
-      )}
+        <PrimaryButton onClick={generateNames} disabled={loading} aria-busy={loading} title={strings.aiTitle}>
+          {strings.generateNames}
+        </PrimaryButton>
 
-      {notice && !loading && (
-        <div className="flex justify-center">
-          <div
-            role="status"
-            className="flex items-start gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-600/40 rounded-md pl-3 pr-1.5 py-1.5 leading-snug"
-          >
-            <span>{notice}</span>
-            <button
-              type="button"
-              onClick={() => setNotice(null)}
-              aria-label={strings.dismiss}
-              title={strings.dismiss}
-              className="shrink-0 rounded px-1.5 leading-snug hover:bg-amber-100 dark:hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-            >
-              <i className="fas fa-xmark" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {!loading && names.length > 0 && (
-        <div className="space-y-2.5" aria-live="polite">
-          <div className="flex flex-wrap justify-end gap-2">
+        {names.length > 0 && !loading && (
+          <div className="flex flex-wrap gap-2.5 sm:ml-auto">
             {([
               ['all', strings.copyAll, names.map(n => `${n.firstName} ${n.lastName}`).join('\n')],
               ['csv', strings.copyAllCsv, names.map(n => `${n.firstName},${n.lastName}`).join('\n')],
             ] as const).map(([key, label, text]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleCopy(text, key)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-slate-700/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-              >
-                {copyStatus[key] === 'success'
-                  ? <i className="fas fa-check text-green-500" aria-hidden="true"></i>
-                  : <i className="far fa-copy" aria-hidden="true"></i>}
-                {label}
+              <button key={key} type="button" onClick={() => handleCopy(text, key)} className={outlineButton}>
+                {copied === key ? <CheckIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
+                {copied === key ? strings.copied : label}
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-[1fr_1fr_auto] gap-x-3 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-slate-400">
-            <div className="pl-1.5">{strings.firstNameHeader}</div>
-            <div className="pl-1.5">{strings.lastNameHeader}</div>
-            <div className="text-center">{strings.actions}</div>
-          </div>
-          <div className="space-y-1.5">
-            {names.map((name, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-[1fr_1fr_auto] gap-x-3 items-center rounded-xl border border-teal-200 dark:border-slate-700 ring-1 ring-inset ring-teal-100 dark:ring-slate-700/60 bg-teal-50 dark:bg-slate-800 px-1.5 py-1"
-              >
-                {/* First name pill cell */}
-                <div className="relative group flex items-center rounded-md px-1.5 py-0.5 font-mono text-gray-800 dark:text-gray-200 text-sm">
-                  {name.firstName}
-                  <button
-                    onClick={() => handleCopy(name.firstName, `${index}-firstName`)}
-                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                    title={strings.copyText(name.firstName)}
-                  >
-                    {copyStatus[`${index}-firstName`] === 'success'
-                      ? <i className="fas fa-check text-green-500"></i>
-                      : <i className="far fa-copy text-teal-600 dark:text-teal-400"></i>}
-                  </button>
-                </div>
+        )}
+      </div>
 
-                {/* Last name pill cell */}
-                <div className="relative group flex items-center rounded-md px-1.5 py-0.5 font-mono text-gray-800 dark:text-gray-200 text-sm">
-                  {name.lastName}
-                  <button
-                    onClick={() => handleCopy(name.lastName, `${index}-lastName`)}
-                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                    title={strings.copyText(name.lastName)}
-                  >
-                    {copyStatus[`${index}-lastName`] === 'success'
-                      ? <i className="fas fa-check text-green-500"></i>
-                      : <i className="far fa-copy text-teal-600 dark:text-teal-400"></i>}
-                  </button>
-                </div>
+      {notice && !loading && (
+        <p role="status" className="mt-5 flex items-start gap-2 border-l-2 border-accent-2 bg-paper py-2 pl-3 pr-1 text-sm text-ink">
+          <span className="flex-1 py-1">{notice}</span>
+          <button type="button" onClick={() => setNotice(null)} aria-label={strings.dismiss} title={strings.dismiss} className="flex h-8 w-8 shrink-0 items-center justify-center text-muted hover:text-ink">
+            <CloseIcon width={16} height={16} />
+          </button>
+        </p>
+      )}
 
-                {/* Actions */}
-                <div className="flex justify-center items-center gap-1.5">
-                  <button
-                    onClick={() => handleCopy(`${name.firstName} ${name.lastName}`, `${index}-fullName`)}
-                    title={strings.copyText(`${name.firstName} ${name.lastName}`)}
-                    aria-label={strings.copyText(`${name.firstName} ${name.lastName}`)}
-                    className="w-8 h-8 flex items-center justify-center rounded-md bg-transparent text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white active:bg-teal-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                  >
-                    {copyStatus[`${index}-fullName`] === 'success'
-                      ? <i className="fas fa-check text-green-500"></i>
-                      : <i className="far fa-copy"></i>}
-                  </button>
-                  <button
-                    onClick={() => handleCopy(`${name.lastName} ${name.firstName}`, `${index}-fullNameRev`)}
-                    title={strings.copyText(`${name.lastName} ${name.firstName}`)}
-                    aria-label={strings.copyText(`${name.lastName} ${name.firstName}`)}
-                    className="w-8 h-8 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-                  >
-                    {copyStatus[`${index}-fullNameRev`] === 'success' ? (
-                      <i className="fas fa-check text-green-500"></i>
-                    ) : (
-                      <span className="relative w-4 h-4 flex items-center justify-center" aria-hidden="true">
-                        <i className="far fa-copy text-teal-600 dark:text-teal-400"></i>
-                        <i className="fas fa-exchange-alt absolute text-teal-600 dark:text-teal-400" style={{ fontSize: '0.5rem' }}></i>
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+      {error && (
+        <p role="alert" className="mt-5 border-l-2 border-accent bg-paper px-3 py-2 text-sm text-ink">
+          {error}
+        </p>
+      )}
+
+      {/* Announces copy confirmations to screen readers. */}
+      <span role="status" className="sr-only">{copied ? strings.copied : ''}</span>
+
+      {loading ? (
+        <div role="status" className="mt-8 border-t border-t-rule">
+          <p className="eyebrow py-3">{strings.generating}</p>
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} aria-hidden="true" className="flex h-[46px] items-center border-t border-line">
+              <span className="h-4 w-2/5 animate-pulse bg-line" />
+            </div>
+          ))}
         </div>
+      ) : (
+        names.length > 0 && (
+          <table className="mt-8 w-full border-t border-t-rule text-left">
+            <thead>
+              <tr className="eyebrow h-9 border-b border-line text-[11px]">
+                <th scope="col" className="w-10 font-medium sm:w-14">{strings.numberHeader}</th>
+                <th scope="col" className="font-medium">{strings.firstNameHeader}</th>
+                <th scope="col" className="font-medium">{strings.lastNameHeader}</th>
+                <th scope="col" className="sr-only">{strings.actions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {names.map((name, index) => {
+                const full = `${name.firstName} ${name.lastName}`;
+                const reversed = `${name.lastName} ${name.firstName}`;
+                const cell = (value: string, key: string) => (
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(value, key)}
+                    title={strings.copyText(value)}
+                    className="group inline-flex min-h-[46px] items-center gap-1.5 text-left text-[15px] hover:text-accent-2 sm:text-[17px]"
+                  >
+                    {value}
+                    {copied === key && <CheckIcon width={14} height={14} className="text-accent-2" />}
+                  </button>
+                );
+                return (
+                  <tr key={index} className="border-b border-line">
+                    <td className="font-mono text-xs text-muted">{pad(index + 1)}</td>
+                    <td>{cell(name.firstName, `${index}-first`)}</td>
+                    <td>{cell(name.lastName, `${index}-last`)}</td>
+                    <td className="whitespace-nowrap text-right">
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(full, `${index}-full`)}
+                        aria-label={strings.copyText(full)}
+                        title={strings.copyText(full)}
+                        className="inline-flex h-11 min-w-11 items-center justify-center gap-1.5 text-sm font-medium text-accent-2 hover:underline"
+                      >
+                        {copied === `${index}-full` ? <CheckIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
+                        <span className="hidden sm:inline">{copied === `${index}-full` ? strings.copied : strings.copy}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(reversed, `${index}-rev`)}
+                        aria-label={strings.copyText(reversed)}
+                        title={strings.copyText(reversed)}
+                        className="hidden h-11 w-11 items-center justify-center text-muted hover:text-ink sm:inline-flex"
+                      >
+                        {copied === `${index}-rev` ? (
+                          <CheckIcon width={15} height={15} />
+                        ) : (
+                          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" />
+                          </svg>
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )
       )}
     </div>
   );

@@ -25,6 +25,8 @@ const en = {
   ibanDimCheck: 'HR + check',
   ibanDimBank: 'Bank code',
   ibanDimAccount: 'Account no.',
+  countLabel: 'Number of names',
+  numberHeader: 'No.',
   specLength: 'Length',
   specAlgorithm: 'Algorithm',
   digitsCount: (n: number) => `${n} digits`,
