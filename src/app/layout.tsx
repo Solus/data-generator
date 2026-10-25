@@ -43,8 +43,6 @@ export default async function RootLayout({
     <html lang={lang} suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/* Font Awesome CDN for icons (removed once all icons are inline SVG) */}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossOrigin="anonymous" referrerPolicy="no-referrer" />
       </head>
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         <LocaleProvider initialLang={lang}>

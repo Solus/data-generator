@@ -1,18 +1,18 @@
 # Backlog
 
-UX improvements and open questions found in the June UX review but not yet done.
-
-## UX
-- Names: per-name copy buttons on touch devices are untested on a real device (rule is in place).
+Open items and known gaps.
 
 ## Testing
 - No automated tests. The generator maths (OIB, IBAN, account control digit) is the part most worth covering; it was checked by hand against known-valid numbers.
 
 ## Unverified
-- Copy confirmation behaviour, keyboard navigation and contrast ratios haven't been audited.
+- Touch behaviour on a real phone (layouts were checked at phone widths in a desktop browser) and real screen-reader use. Text contrast was audited automatically in both themes.
 - Retry/fallback across the two Gemini models has only been tested for single-model failures.
 
+## Design follow-ups
+- Names on phones: the "copy reversed (Surname First)" button is hidden to save space; tapping a name still copies just that part, and the row button copies the full name.
+- The disabled bank dropdown (while "random bank" is on) is shown at reduced opacity; check it reads as intentionally disabled.
+- The footer title block shows the `package.json` version (currently 0.1.0).
+
 ## Housekeeping
-- `Navigation.tsx` uses a `scrollbar-none` class that isn't defined anywhere (no-op); add a utility or drop it.
-- Unused default Next assets in `public/` (`file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`) — nothing references them.
 - `package.json` pins next/react/typescript to `latest`.

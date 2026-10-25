@@ -2,7 +2,7 @@
 
 A small web app that generates **Croatian test data** with one click: IBANs, OIBs (national ID numbers) and personal names. It is meant for filling forms and test databases, not for anything that needs real people or real accounts.
 
-The interface is available in Croatian (default) and English, with light and dark themes. Both choices are remembered.
+The interface is available in Croatian (default) and English, with light and dark themes. The theme follows your device's setting until you pick one with the toggle; both choices are remembered. It works on phones as well as desktop.
 
 ## What it generates
 

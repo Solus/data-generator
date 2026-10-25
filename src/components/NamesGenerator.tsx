@@ -110,7 +110,7 @@ const NamesGenerator: React.FC = () => {
       <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-7">
         <div className="flex flex-col gap-2">
           <span id="count-label" className="text-sm font-medium text-ink-soft">{strings.countLabel}</span>
-          <div role="group" aria-labelledby="count-label" className="flex h-12 w-fit rounded-[2px] border border-control">
+          <div role="group" aria-labelledby="count-label" className="flex h-12 w-fit rounded-[2px] border border-control focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-2">
             <button type="button" onClick={decrementNum} aria-label={strings.decrease} className={`${stepButton} border-r border-control`}>−</button>
             <input
               type="text"
