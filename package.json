@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.11",
-    "next": "latest",
+    "next": "^15.5.28",
     "react": "latest",
     "react-dom": "latest"
   },
@@ -20,7 +20,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^15.4.6",
+    "eslint-config-next": "^15.5.28",
     "tailwindcss": "^4.1.12",
     "typescript": "latest"
   }
