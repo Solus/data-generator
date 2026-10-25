@@ -116,7 +116,7 @@ const NamesGenerator: React.FC = () => {
   useCopyShortcut(copyAll);
 
   const stepButton = 'flex h-12 w-11 items-center justify-center text-xl text-ink hover:bg-paper sm:w-[46px]';
-  const groupButton = 'inline-flex h-[52px] items-center gap-2.5 px-4 text-[15px] font-medium text-ink transition-colors hover:bg-ink hover:text-on-ink sm:h-[46px]';
+  const groupButton = 'inline-flex h-[52px] items-center gap-2.5 px-4 text-[15px] font-medium text-ink hover:bg-ink hover:text-on-ink sm:h-[46px]';
 
   return (
     <div>

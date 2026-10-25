@@ -38,7 +38,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ status, onClick, title, label }
         title={name}
         aria-label={name}
         aria-keyshortcuts={COPY_SHORTCUT_KEY.toUpperCase()}
-        className={`inline-flex h-[52px] shrink-0 items-center justify-center gap-2.5 rounded-[2px] border px-4 text-[15px] font-medium transition-colors sm:h-12 ${stateClass}`}
+        className={`inline-flex h-[52px] shrink-0 items-center justify-center gap-2.5 rounded-[2px] border px-4 text-[15px] font-medium sm:h-12 ${stateClass}`}
       >
         {status === 'success' ? <CheckIcon /> : status === 'error' ? <WarningIcon /> : <CopyIcon />}
         {/* Icon-only below 360px so the primary button's label stays on one line (name stays via aria-label). */}

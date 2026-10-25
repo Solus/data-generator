@@ -35,7 +35,7 @@ function SegmentedControl<T extends string>({ name, ariaLabel, value, onChange, 
             className="peer sr-only"
           />
           <span
-            className={`flex items-center justify-center gap-1.5 rounded-[1px] px-2.5 text-[13px] text-muted transition-colors peer-not-checked:hover:text-ink peer-checked:bg-ink peer-checked:text-on-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent-2 ${size === 'md' ? 'h-9' : 'h-8'} ${o.iconOnlyOnPhone ? 'w-7 px-0 sm:w-auto sm:px-2.5' : ''}`}
+            className={`flex items-center justify-center gap-1.5 rounded-[1px] px-2.5 text-[13px] text-muted peer-not-checked:hover:text-ink peer-checked:bg-ink peer-checked:text-on-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent-2 ${size === 'md' ? 'h-9' : 'h-8'} ${o.iconOnlyOnPhone ? 'w-7 px-0 sm:w-auto sm:px-2.5' : ''}`}
           >
             {o.icon}
             <span className={o.iconOnlyOnPhone ? 'sr-only sm:not-sr-only' : ''}>{o.label}</span>
