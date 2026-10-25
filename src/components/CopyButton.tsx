@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { copyToClipboard } from '@/utils/clipboard';
 import { useLocale } from '@/utils/locale';
 
@@ -17,16 +17,28 @@ interface CopyButtonProps {
 
 const CopyButton: React.FC<CopyButtonProps> = ({
   textToCopy,
-  className,
+  className = '',
   title,
   onCopySuccess,
   onCopyError,
   onNoText,
 }) => {
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback>('idle');
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { strings } = useLocale();
 
   const resolvedTitle = title ?? strings.copy;
+
+  // Don't touch state after unmount.
+  useEffect(() => () => {
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+  }, []);
+
+  const showFeedback = (feedback: CopyFeedback) => {
+    setCopyFeedback(feedback);
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    resetTimer.current = setTimeout(() => setCopyFeedback('idle'), 1000);
+  };
 
   const handleCopy = async () => {
     if (!textToCopy) {
@@ -36,11 +48,10 @@ const CopyButton: React.FC<CopyButtonProps> = ({
 
     const success = await copyToClipboard(textToCopy);
     if (success) {
-      setCopyFeedback('success');
+      showFeedback('success');
       onCopySuccess?.();
-      setTimeout(() => setCopyFeedback('idle'), 1000);
     } else {
-      setCopyFeedback('error');
+      showFeedback('error');
       onCopyError?.(strings.copyFailed);
     }
   };
@@ -49,11 +60,25 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   const feedbackClassName =
     copyFeedback === 'success'
       ? 'bg-teal-500 text-white animate-pulse'
-      : 'bg-transparent text-teal-600 dark:text-teal-400 hover:bg-slate-200 dark:hover:bg-slate-700/60';
+      : copyFeedback === 'error'
+        ? 'bg-red-500 text-white'
+        : 'bg-transparent text-teal-600 dark:text-teal-400 hover:bg-slate-200 dark:hover:bg-slate-700/60';
 
   return (
-    <button onClick={handleCopy} className={`${baseClassName} ${feedbackClassName} ${className}`} title={resolvedTitle}>
-      {copyFeedback === 'success' ? <i className="fas fa-check"></i> : <i className="far fa-copy"></i>}
+    <button
+      type="button"
+      onClick={handleCopy}
+      className={`${baseClassName} ${feedbackClassName} ${className}`}
+      title={resolvedTitle}
+      aria-label={resolvedTitle}
+    >
+      {copyFeedback === 'success' ? (
+        <i className="fas fa-check" aria-hidden="true"></i>
+      ) : copyFeedback === 'error' ? (
+        <i className="fas fa-triangle-exclamation" aria-hidden="true"></i>
+      ) : (
+        <i className="far fa-copy" aria-hidden="true"></i>
+      )}
     </button>
   );
 };

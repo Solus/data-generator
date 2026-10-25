@@ -79,7 +79,7 @@ const IbanGenerator: React.FC = () => {
     <div className="space-y-6">
       {/* Bank Selection & Random Switch */}
       <div className="space-y-2">
-        <label className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
+        <label id="bank-label" className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
           <i className="fas fa-university mr-2 text-gray-600 dark:text-gray-400"></i>
           {strings.selectBankLabel}
         </label>
@@ -87,14 +87,15 @@ const IbanGenerator: React.FC = () => {
           {/* Dropdown (visually disabled when random is ON) */}
           <div
             className={`flex-1 ${isRandomSelected
-              ? 'pointer-events-none cursor-not-allowed rounded-md bg-gray-100 dark:bg-slate-700/40 ring-1 ring-inset ring-gray-300/60 dark:ring-slate-600/60'
+              ? 'cursor-not-allowed rounded-md bg-gray-100 dark:bg-slate-700/40 ring-1 ring-inset ring-gray-300/60 dark:ring-slate-600/60'
               : ''}`}
-            aria-disabled={isRandomSelected}
           >
             <CustomDropdown
               options={bankData}
               value={selectedBankKey}
               onChange={handleBankChange}
+              disabled={isRandomSelected}
+              labelledBy="bank-label"
               renderDisplay={(key) => (
                 <span
                   className={
