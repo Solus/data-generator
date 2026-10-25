@@ -1,9 +1,11 @@
-'use client';
-
-import NamesGenerator from '../../components/NamesGenerator';
+import NamesGenerator from '@/components/NamesGenerator';
+import PageIntro from '@/components/PageIntro';
 
 export default function NamesPage() {
   return (
-    <NamesGenerator />
+    <>
+      <PageIntro page="names" />
+      <NamesGenerator />
+    </>
   );
 }

@@ -1,9 +1,11 @@
-'use client';
-
-import OibGenerator from '../../components/OibGenerator';
+import OibGenerator from '@/components/OibGenerator';
+import PageIntro from '@/components/PageIntro';
 
 export default function OibPage() {
   return (
-    <OibGenerator />
+    <>
+      <PageIntro page="oib" />
+      <OibGenerator />
+    </>
   );
 }

@@ -1,9 +1,11 @@
-'use client';
-
-import IbanGenerator from '../../components/IbanGenerator';
+import IbanGenerator from '@/components/IbanGenerator';
+import PageIntro from '@/components/PageIntro';
 
 export default function IbanPage() {
   return (
-    <IbanGenerator />
+    <>
+      <PageIntro page="iban" />
+      <IbanGenerator />
+    </>
   );
 }

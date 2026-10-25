@@ -1,17 +1,18 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Instrument_Sans, IBM_Plex_Mono } from 'next/font/google';
+import { cookies } from 'next/headers';
+import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
 import Navigation from '@/components/Navigation';
-import ThemeToggleWrapper from '@/components/ThemeToggleWrapper';
-import LanguageSelector from '@/components/LanguageSelector';
-import AppHeading from '@/components/AppHeading';
 import en from '@/locales/en';
 import hr from '@/locales/hr';
-import { cookies } from 'next/headers';
 import { LocaleProvider } from '@/utils/locale';
 import { LANG_COOKIE, type Lang } from '@/utils/lang';
 
-const inter = Inter({ subsets: ['latin'] });
+// latin-ext is required for Croatian letters (š, č, ć, ž, đ).
+const sans = Instrument_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-sans-app', display: 'swap' });
+const mono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-mono-app', display: 'swap' });
 
 const getLang = async (): Promise<Lang> => ((await cookies()).get(LANG_COOKIE)?.value === 'en' ? 'en' : 'hr');
 
@@ -23,6 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 // Runs before first paint so the saved/system theme is applied with no flash of the wrong one.
 const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}})();`;
 
+// Small registration mark drawn at each corner of the sheet (decorative).
+const Crosshair = ({ className }: { className: string }) => (
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" className={`absolute hidden text-cross sm:block ${className}`}>
+    <path d="M7 0v14M0 7h14" stroke="currentColor" strokeWidth="1" />
+  </svg>
+);
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -31,56 +39,29 @@ export default async function RootLayout({
   const lang = await getLang();
 
   return (
-	// suppressHydrationWarning: the inline theme script changes <html class> before React hydrates.
-	<html lang={lang} suppressHydrationWarning>
-	  <head>
-		<script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-		{/* Font Awesome CDN for icons */}
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossOrigin="anonymous" referrerPolicy="no-referrer" />
-		<style>{`
-          html.dark body {
-            background-color: #020617 !important;
-            background-image: none !important;
-          }
-          /* Force material-card dark background */
-          html.dark .material-card {
-            background-color: #0f172a !important; /* slate-900 */
-            border-color: rgba(51,65,85,0.7) !important; /* slate-700 */
-          }
-          .material-card {
-            background-color: #ffffff; /* solid light mode */
-          }
-        `}</style>
-	  </head>
-			<body className={`${inter.className} antialiased min-h-screen
-        bg-slate-100 text-slate-900
-        dark:bg-slate-950 dark:text-slate-100
-        dark:bg-none dark:[background-image:none]
-        transition-colors`}>
-				<LocaleProvider initialLang={lang}>
-					<div className="min-h-screen">
-						<div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-							<div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-							<AppHeading />
-								<div className="flex items-center space-x-3 rounded-full bg-white/70 dark:bg-slate-800/60 px-3 py-2 shadow-lg shadow-cyan-200/30 dark:shadow-cyan-900/40 backdrop-blur md:space-x-4">
-									<LanguageSelector />
-									<ThemeToggleWrapper />
-								</div>
-							</div>
-							<div
-                className="material-card mt-8 rounded-3xl border shadow-2xl shadow-cyan-500/10 dark:shadow-black/40
-                  border-slate-200 dark:border-slate-700
-                  bg-white dark:bg-slate-900 transition-colors"
-              >
-                <Navigation />
-                <div className="px-4 py-8 sm:px-10 sm:py-12">
-                  {children}
-                </div>
-              </div>
-						</div>
-					</div>
-				</LocaleProvider>
-			</body>
-	</html>
+    // suppressHydrationWarning: the inline theme script changes <html class> before React hydrates.
+    <html lang={lang} suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* Font Awesome CDN for icons (removed once all icons are inline SVG) */}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+      </head>
+      <body className="min-h-screen bg-paper font-sans text-ink antialiased">
+        <LocaleProvider initialLang={lang}>
+          <div className="min-h-screen p-3 sm:p-7">
+            <div className="relative mx-auto flex min-h-[calc(100vh-1.5rem)] max-w-[1200px] flex-col border border-frame bg-sheet sm:min-h-[calc(100vh-3.5rem)]">
+              <Crosshair className="-left-[7px] -top-[7px]" />
+              <Crosshair className="-right-[7px] -top-[7px]" />
+              <Crosshair className="-bottom-[7px] -left-[7px]" />
+              <Crosshair className="-bottom-[7px] -right-[7px]" />
+              <AppHeader />
+              <Navigation />
+              <main className="flex-1 px-5 pb-10 pt-6 sm:px-16 sm:pb-12 sm:pt-9">{children}</main>
+              <AppFooter />
+            </div>
+          </div>
+        </LocaleProvider>
+      </body>
+    </html>
   );
 }

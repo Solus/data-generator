@@ -3,63 +3,34 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale } from '@/utils/locale';
+import { PAGES, pad } from './PageIntro';
 
+// Numbered top tabs. Short labels on phones so three tabs share the width; full labels from sm up.
 export default function Navigation() {
   const pathname = usePathname();
   const { strings } = useLocale();
 
-  const navItems = [
-    { href: '/iban', icon: 'fas fa-money-check-dollar', label: strings.ibanGenerator },
-    { href: '/oib', icon: 'fas fa-id-card', label: strings.oibGenerator },
-    { href: '/names', icon: 'fas fa-users', label: strings.namesGenerator },
-  ];
-
   return (
-    <nav
-      aria-label={strings.navigationLabel}
-      className="overflow-x-auto scrollbar-none"
-    >
-      <ul
-        className="flex items-stretch gap-1 md:gap-2 px-2 md:px-4
-        border-b border-gray-200 dark:border-slate-600
-        bg-white/90 dark:bg-slate-900/95 backdrop-blur-sm rounded-t-3xl"
-      >
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <li key={item.href} className="flex-1 sm:flex-none">
-              <Link
-                href={item.href}
-                aria-current={isActive ? 'page' : undefined}
-                className={[
-                  // Phones: equal-width tabs, icon above a wrapped label. sm and up: single-line tabs.
-                  'relative flex h-full flex-col items-center justify-center gap-1 px-2 py-3 text-center text-xs leading-tight',
-                  'sm:inline-flex sm:flex-row sm:gap-2 sm:px-4 sm:py-3.5 sm:text-sm sm:leading-normal md:px-5',
-                  'font-medium rounded-t-md',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900',
-                  'transition-colors motion-safe:duration-150',
-                  isActive
-                    ? 'text-teal-600 dark:text-teal-400 after:content-[""] after:absolute after:inset-x-3 after:-bottom-px after:h-[2px] after:rounded-full after:bg-teal-500 dark:after:bg-teal-400'
-                    : [
-                        'text-gray-600 dark:text-gray-300',
-                        'hover:text-teal-600 dark:hover:text-teal-300',
-                        'hover:bg-teal-500/5 dark:hover:bg-slate-700/60',
-                        'active:bg-teal-500/10 dark:active:bg-slate-700/80',
-                      ].join(' '),
-                ].join(' ')}
-              >
-                <i className={item.icon} aria-hidden="true"></i>
-                <span>{item.label}</span>
-                {!isActive && (
-                  <span className="sr-only">
-                    {strings.navigateTo} {item.label}
-                  </span>
-                )}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav aria-label={strings.navigationLabel} className="flex border-y border-line px-0 sm:px-10">
+      {PAGES.map((item, i) => {
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            className={[
+              'relative flex h-12 flex-1 items-center justify-center gap-2 text-sm sm:h-[52px] sm:flex-none sm:justify-start sm:gap-3 sm:pr-9 sm:text-[15px]',
+              isActive ? 'font-semibold text-ink' : 'text-ink-soft hover:text-accent',
+            ].join(' ')}
+          >
+            <span className={`font-mono text-[11px] sm:text-xs ${isActive ? 'font-medium text-accent' : 'text-muted'}`}>{pad(i + 1)}</span>
+            <span className="hidden sm:inline">{strings[item.titleKey]}</span>
+            <span className="sm:hidden">{strings[item.tabKey]}</span>
+            {isActive && <span aria-hidden="true" className="absolute inset-x-0 -bottom-px h-[3px] bg-accent sm:right-9" />}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
