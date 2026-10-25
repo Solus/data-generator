@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { copyToClipboard } from '@/utils/clipboard';
 import { generateLocalNames } from '@/utils/names';
 import { useLocale } from '@/utils/locale';
-import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
+import { useCopyShortcut, useGenerateShortcut } from '@/utils/useGenerateShortcut';
+import ActionBar from './ActionBar';
 import PrimaryButton from './PrimaryButton';
+import SegmentedControl from './SegmentedControl';
+import ShortcutHint from './ShortcutHint';
 import { pad } from './PageIntro';
 import { CheckIcon, CloseIcon, CopyIcon } from './icons';
 
@@ -14,8 +17,7 @@ interface Name {
   lastName: string;
 }
 
-const outlineButton =
-  'inline-flex h-11 items-center gap-2 rounded-[2px] border border-ink px-3.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-on-ink sm:h-10';
+type NameOrder = 'first-last' | 'last-first';
 
 const NamesGenerator: React.FC = () => {
   // null while the field is empty, so the user can clear it and type a new number (restored to 10 on blur).
@@ -26,6 +28,8 @@ const NamesGenerator: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null); // key of the item that was just copied
+  const [order, setOrder] = useState<NameOrder>('first-last'); // order used by every copy action
+  const orderName = useId();
 
   const { strings } = useLocale();
 
@@ -98,52 +102,68 @@ const NamesGenerator: React.FC = () => {
     }
   };
 
+  // Text for a name in the chosen order (full name, or one CSV line).
+  const fullName = (n: Name) => (order === 'first-last' ? `${n.firstName} ${n.lastName}` : `${n.lastName} ${n.firstName}`);
+  const csvLine = (n: Name) => (order === 'first-last' ? `${n.firstName},${n.lastName}` : `${n.lastName},${n.firstName}`);
+
+  const copyAll = () => {
+    if (names.length > 0) handleCopy(names.map(fullName).join('\n'), 'all');
+  };
+
   useGenerateShortcut(() => {
     if (!loading) generateNames();
   });
+  useCopyShortcut(copyAll);
 
   const stepButton = 'flex h-12 w-11 items-center justify-center text-xl text-ink hover:bg-paper sm:w-[46px]';
+  const groupButton = 'inline-flex h-[52px] items-center gap-2.5 px-4 text-[15px] font-medium text-ink transition-colors hover:bg-ink hover:text-on-ink sm:h-[46px]';
 
   return (
-    <div className="mt-7">
-      {/* Count + generate + bulk copy */}
-      <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-7">
-        <div className="flex flex-col gap-2">
-          <span id="count-label" className="text-sm font-medium text-ink-soft">{strings.countLabel}</span>
-          <div role="group" aria-labelledby="count-label" className="flex h-12 w-fit rounded-[2px] border border-control focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-2">
-            <button type="button" onClick={decrementNum} aria-label={strings.decrease} className={`${stepButton} border-r border-control`}>−</button>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={numNames ?? ''}
-              onChange={onNumChange}
-              onBlur={() => setNumNames(n => n ?? 10)}
-              aria-labelledby="count-label"
-              className="w-16 bg-transparent text-center font-mono text-base text-ink focus:outline-none"
-            />
-            <button type="button" onClick={incrementNum} aria-label={strings.increase} className={`${stepButton} border-l border-control`}>+</button>
+    <div>
+      <ActionBar
+        options={
+          <div className="flex flex-col gap-1.5">
+            <span id="count-label" className="text-[13px] font-medium text-ink-soft">{strings.countLabel}</span>
+            <div role="group" aria-labelledby="count-label" className="flex h-12 w-fit rounded-[2px] border border-control focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-2">
+              <button type="button" onClick={decrementNum} aria-label={strings.decrease} className={`${stepButton} border-r border-control`}>−</button>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={numNames ?? ''}
+                onChange={onNumChange}
+                onBlur={() => setNumNames(n => n ?? 10)}
+                aria-labelledby="count-label"
+                className="w-16 bg-transparent text-center font-mono text-base text-ink focus:outline-none"
+              />
+              <button type="button" onClick={incrementNum} aria-label={strings.increase} className={`${stepButton} border-l border-control`}>+</button>
+            </div>
           </div>
-        </div>
-
-        <PrimaryButton onClick={generateNames} disabled={loading} aria-busy={loading} title={strings.aiTitle}>
-          {strings.generateNames}
-        </PrimaryButton>
-
+        }
+      >
         {names.length > 0 && !loading && (
-          <div className="flex flex-wrap gap-2.5 sm:ml-auto">
-            {([
-              ['all', strings.copyAll, names.map(n => `${n.firstName} ${n.lastName}`).join('\n')],
-              ['csv', strings.copyAllCsv, names.map(n => `${n.firstName},${n.lastName}`).join('\n')],
-            ] as const).map(([key, label, text]) => (
-              <button key={key} type="button" onClick={() => handleCopy(text, key)} className={outlineButton}>
-                {copied === key ? <CheckIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
-                {copied === key ? strings.copied : label}
-              </button>
-            ))}
+          <div role="group" aria-label={strings.copyAll} className="flex shrink-0 divide-x divide-ink rounded-[2px] border border-ink sm:h-12">
+            <button type="button" onClick={copyAll} aria-keyshortcuts="C" className={groupButton}>
+              {copied === 'all' ? <CheckIcon /> : <CopyIcon />}
+              {copied === 'all' ? strings.copied : strings.copyAll}
+              <ShortcutHint keyName="c" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleCopy(names.map(csvLine).join('\n'), 'csv')}
+              aria-label={strings.copyAllCsv}
+              title={strings.copyAllCsv}
+              className={groupButton}
+            >
+              {copied === 'csv' ? <CheckIcon /> : null}
+              CSV
+            </button>
           </div>
         )}
-      </div>
+        <PrimaryButton className="max-sm:order-first max-sm:basis-full" onClick={generateNames} disabled={loading} aria-busy={loading} title={strings.aiTitle}>
+          {strings.generateNames}
+        </PrimaryButton>
+      </ActionBar>
 
       {notice && !loading && (
         <p role="status" className="mt-5 flex items-start gap-2 border-l-2 border-accent-2 bg-paper py-2 pl-3 pr-1 text-sm text-ink">
@@ -164,7 +184,7 @@ const NamesGenerator: React.FC = () => {
       <span role="status" className="sr-only">{copied ? strings.copied : ''}</span>
 
       {loading ? (
-        <div role="status" className="mt-8 border-t border-t-rule">
+        <div role="status" className="mt-7 border-t border-t-rule">
           <p className="eyebrow py-3">{strings.generating}</p>
           {[0, 1, 2, 3].map(i => (
             <div key={i} aria-hidden="true" className="flex h-[46px] items-center border-t border-line">
@@ -174,67 +194,73 @@ const NamesGenerator: React.FC = () => {
         </div>
       ) : (
         names.length > 0 && (
-          <table className="mt-8 w-full border-t border-t-rule text-left">
-            <thead>
-              <tr className="eyebrow h-9 border-b border-line text-[11px]">
-                <th scope="col" className="w-10 font-medium sm:w-14">{strings.numberHeader}</th>
-                <th scope="col" className="font-medium">{strings.firstNameHeader}</th>
-                <th scope="col" className="font-medium">{strings.lastNameHeader}</th>
-                <th scope="col" className="sr-only">{strings.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {names.map((name, index) => {
-                const full = `${name.firstName} ${name.lastName}`;
-                const reversed = `${name.lastName} ${name.firstName}`;
-                const cell = (value: string, key: string) => (
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(value, key)}
-                    title={strings.copyText(value)}
-                    className="group inline-flex min-h-[46px] items-center gap-1.5 text-left text-[15px] hover:text-accent-2 sm:text-[17px]"
-                  >
-                    {value}
-                    {copied === key && <CheckIcon width={14} height={14} className="text-accent-2" />}
-                  </button>
-                );
-                return (
-                  <tr key={index} className="border-b border-line">
-                    <td className="font-mono text-xs text-muted">{pad(index + 1)}</td>
-                    <td>{cell(name.firstName, `${index}-first`)}</td>
-                    <td>{cell(name.lastName, `${index}-last`)}</td>
-                    <td className="whitespace-nowrap text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(full, `${index}-full`)}
-                        aria-label={strings.copyText(full)}
-                        title={strings.copyText(full)}
-                        className="inline-flex h-11 min-w-11 items-center justify-center gap-1.5 text-sm font-medium text-accent-2 hover:underline"
-                      >
-                        {copied === `${index}-full` ? <CheckIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
-                        <span className="hidden sm:inline">{copied === `${index}-full` ? strings.copied : strings.copy}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(reversed, `${index}-rev`)}
-                        aria-label={strings.copyText(reversed)}
-                        title={strings.copyText(reversed)}
-                        className="hidden h-11 w-11 items-center justify-center text-muted hover:text-ink sm:inline-flex"
-                      >
-                        {copied === `${index}-rev` ? (
-                          <CheckIcon width={15} height={15} />
+          <section aria-label={strings.namesGenerator} className="mt-7 border-t border-t-rule">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5 text-[13px] text-muted sm:justify-end">
+              <span>{strings.copyOrderLabel}</span>
+              <SegmentedControl
+                name={orderName}
+                ariaLabel={strings.copyOrderLabel}
+                value={order}
+                onChange={setOrder}
+                options={[
+                  { value: 'first-last', label: strings.orderFirstLast },
+                  { value: 'last-first', label: strings.orderLastFirst },
+                ]}
+              />
+            </div>
+            <table className="w-full border-t border-line text-left">
+              <thead>
+                <tr className="eyebrow h-10 border-b border-line">
+                  <th scope="col" className="w-10 font-medium sm:w-14">{strings.numberHeader}</th>
+                  <th scope="col" className="font-medium">{strings.firstNameHeader}</th>
+                  <th scope="col" className="font-medium">{strings.lastNameHeader}</th>
+                  <th scope="col" className="sr-only">{strings.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {names.map((name, index) => {
+                  const full = fullName(name);
+                  const rowKey = `${index}-full`;
+                  const cell = (value: string, key: string) => (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(value, key)}
+                      title={strings.copyText(value)}
+                      className="inline-flex min-h-[46px] cursor-copy items-center gap-1.5 text-left text-base hover:text-accent-2 sm:text-lg"
+                    >
+                      {value}
+                      {copied === key && <CheckIcon width={14} height={14} className="text-accent-2" />}
+                    </button>
+                  );
+                  return (
+                    <tr key={index} className={`border-b border-line ${copied === rowKey ? 'bg-paper' : ''}`}>
+                      <td className="font-mono text-xs text-muted">{pad(index + 1)}</td>
+                      <td>{cell(name.firstName, `${index}-first`)}</td>
+                      <td>{cell(name.lastName, `${index}-last`)}</td>
+                      <td className="text-right">
+                        {copied === rowKey ? (
+                          <span className="inline-flex h-11 items-center gap-1.5 pr-2 text-sm font-medium text-accent-2">
+                            <CheckIcon width={16} height={16} />
+                            <span className="hidden sm:inline">{strings.copied}</span>
+                          </span>
                         ) : (
-                          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" />
-                          </svg>
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(full, rowKey)}
+                            aria-label={strings.copyText(full)}
+                            title={strings.copyText(full)}
+                            className="inline-flex h-11 w-11 items-center justify-center text-muted hover:text-ink"
+                          >
+                            <CopyIcon width={17} height={17} />
+                          </button>
                         )}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </section>
         )
       )}
     </div>
