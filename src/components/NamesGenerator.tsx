@@ -102,9 +102,9 @@ const NamesGenerator: React.FC = () => {
     }
   };
 
-  // Text for a name in the chosen order (full name, or one CSV line).
+  // A name in the chosen order. "Copy all" puts one per line; the CSV button puts them on a single
+  // line separated by commas ("First Last, First Last, ...").
   const fullName = (n: Name) => (order === 'first-last' ? `${n.firstName} ${n.lastName}` : `${n.lastName} ${n.firstName}`);
-  const csvLine = (n: Name) => (order === 'first-last' ? `${n.firstName},${n.lastName}` : `${n.lastName},${n.firstName}`);
 
   const copyAll = () => {
     if (names.length > 0) handleCopy(names.map(fullName).join('\n'), 'all');
@@ -150,7 +150,7 @@ const NamesGenerator: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => handleCopy(names.map(csvLine).join('\n'), 'csv')}
+              onClick={() => handleCopy(names.map(fullName).join(', '), 'csv')}
               aria-label={strings.copyAllCsv}
               title={strings.copyAllCsv}
               className={groupButton}

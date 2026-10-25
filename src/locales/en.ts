@@ -41,7 +41,7 @@ const en = {
   appDescription: 'A simple web application to generate Croatian IBANs, OIBs, and names.',
   selectLanguage: 'Select language',
   copyAll: 'Copy all',
-  copyAllCsv: 'Copy as CSV',
+  copyAllCsv: 'Copy as a comma-separated list',
   copyOrderLabel: 'Copies as',
   namesCopyHint: 'Click a first or last name to copy just that part.',
   orderFirstLast: 'First Last',

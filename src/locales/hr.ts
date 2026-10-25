@@ -42,7 +42,7 @@ const hr = {
   appDescription: 'Jednostavna web aplikacija za generiranje hrvatskih IBAN-ova, OIB-ova i imena.',
   selectLanguage: 'Odaberite jezik',
   copyAll: 'Kopiraj sve',
-  copyAllCsv: 'Kopiraj kao CSV',
+  copyAllCsv: 'Kopiraj kao popis odvojen zarezima',
   copyOrderLabel: 'Kopira kao',
   namesCopyHint: 'Kliknite ime ili prezime za kopiranje samo tog dijela.',
   orderFirstLast: 'Ime Prezime',
