@@ -142,7 +142,7 @@ const CustomDropdown = <T,>({
               id={optionId(index)}
               role="option"
               aria-selected={key === value}
-              className={`cursor-pointer px-4 py-3 text-[15px] ${index === activeIndex ? 'bg-paper' : ''} ${key === value ? 'font-semibold' : ''} ${key === separatorAfter ? 'border-b border-line' : ''}`}
+              className={`cursor-pointer px-4 py-3 text-[15px] ${index === activeIndex ? 'bg-hover' : ''} ${key === value ? 'font-semibold' : ''} ${key === separatorAfter ? 'border-b border-line' : ''}`}
               onMouseEnter={() => setActiveIndex(index)}
               // mousedown (not click) so the button keeps focus and the outside-click handler isn't involved
               onMouseDown={(e) => {

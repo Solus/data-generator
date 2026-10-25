@@ -9,6 +9,7 @@
   color-scheme: light;
   --paper: #f4f4f2; /* page ground */
   --sheet: #ffffff; /* the framed sheet */
+  --hover: #f4f4f2; /* hover / highlighted / "just copied" tint: slightly off the sheet in either mode */
   --ink: #16181d; /* primary text, primary button */
   --ink-soft: #3a3f47;
   --muted: #5f6670; /* secondary text (>= 4.5:1 on sheet) */
@@ -27,6 +28,7 @@
   color-scheme: dark; /* native controls and scrollbars follow the theme */
   --paper: #0c0d0f;
   --sheet: #141619;
+  --hover: #252a31; /* lighter than the sheet (the page ground --paper is darker, so it can't be reused here) */
   --ink: #ecedef;
   --ink-soft: #c4c8ce;
   --muted: #9aa1ab;
@@ -44,6 +46,7 @@
 @theme inline {
   --color-paper: var(--paper);
   --color-sheet: var(--sheet);
+  --color-hover: var(--hover);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);

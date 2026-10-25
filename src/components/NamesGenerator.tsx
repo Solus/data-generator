@@ -115,7 +115,7 @@ const NamesGenerator: React.FC = () => {
   });
   useCopyShortcut(copyAll);
 
-  const stepButton = 'flex h-12 w-11 items-center justify-center text-xl text-ink hover:bg-paper sm:w-[46px]';
+  const stepButton = 'flex h-12 w-11 items-center justify-center text-xl text-ink hover:bg-hover sm:w-[46px]';
   const groupButton = 'inline-flex h-[52px] items-center gap-2.5 px-4 text-[15px] font-medium text-ink hover:bg-ink hover:text-on-ink sm:h-[46px]';
 
   return (
@@ -236,7 +236,7 @@ const NamesGenerator: React.FC = () => {
                       type="button"
                       onClick={() => handleCopy(value, key)}
                       title={strings.copyText(value)}
-                      className="group -mx-2.5 my-1.5 inline-flex min-h-[34px] items-center gap-2 rounded-[2px] px-2.5 py-1 text-left text-base hover:bg-paper focus-visible:bg-paper sm:text-lg"
+                      className="group -mx-2.5 my-1.5 inline-flex min-h-[34px] items-center gap-2 rounded-[2px] px-2.5 py-1 text-left text-base hover:bg-hover focus-visible:bg-hover sm:text-lg"
                     >
                       {value}
                       {copied === key ? (
@@ -247,7 +247,7 @@ const NamesGenerator: React.FC = () => {
                     </button>
                   );
                   return (
-                    <tr key={index} className={`border-b border-line ${copied === rowKey ? 'bg-paper' : ''}`}>
+                    <tr key={index} className={`border-b border-line ${copied === rowKey ? 'bg-hover' : ''}`}>
                       <td className="font-mono text-xs text-muted">{pad(index + 1)}</td>
                       <td>{cell(name.firstName, `${index}-first`)}</td>
                       <td>{cell(name.lastName, `${index}-last`)}</td>
@@ -259,7 +259,7 @@ const NamesGenerator: React.FC = () => {
                           onClick={() => handleCopy(full, rowKey)}
                           aria-label={strings.copyText(full)}
                           title={strings.copyText(full)}
-                          className="inline-flex h-9 w-full items-center justify-end gap-1.5 rounded-[2px] px-2 text-sm font-medium text-accent-2 hover:bg-paper focus-visible:bg-paper"
+                          className="inline-flex h-9 w-full items-center justify-end gap-1.5 rounded-[2px] px-2 text-sm font-medium text-accent-2 hover:bg-hover focus-visible:bg-hover"
                         >
                           {copied === rowKey ? <CheckIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
                           <span className="hidden sm:inline">{copied === rowKey ? strings.copied : strings.copy}</span>
