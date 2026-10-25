@@ -54,7 +54,7 @@ export default async function RootLayout({
         transition-colors`}>
 				<LocaleProvider initialLang={lang}>
 					<div className="min-h-screen">
-						<div className="mx-auto max-w-5xl px-6 py-12">
+						<div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
 							<div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
 								<div>
 									<h1 className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Data Generator</h1>
@@ -71,7 +71,7 @@ export default async function RootLayout({
                   bg-white dark:bg-slate-900 transition-colors"
               >
                 <Navigation />
-                <div className="px-6 py-8 sm:px-10 sm:py-12">
+                <div className="px-4 py-8 sm:px-10 sm:py-12">
                   {children}
                 </div>
               </div>

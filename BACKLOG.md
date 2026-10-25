@@ -4,7 +4,6 @@ UX improvements and open questions found in the June UX review but not yet done.
 
 ## UX
 - **No keyboard shortcut to regenerate** (e.g. Enter/Space or `R`) on any page.
-- **Tab bar is clipped on phones** ("Generator imena" cut off, needs sideways scroll). Shorter labels or a wrapping layout.
 - **IBAN colour segments have no legend** (country / check digits / bank / account number).
 - **Notice for built-in names isn't dismissible** and stays until the next generate.
 

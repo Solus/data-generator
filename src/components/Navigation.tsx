@@ -28,14 +28,17 @@ export default function Navigation() {
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <li key={item.href}>
+            <li key={item.href} className="flex-1 sm:flex-none">
               <Link
                 href={item.href}
                 role="tab"
                 aria-selected={isActive}
                 aria-current={isActive ? 'page' : undefined}
                 className={[
-                  'relative inline-flex items-center gap-2 px-4 py-3.5 md:px-5 text-sm font-medium rounded-t-md',
+                  // Phones: equal-width tabs, icon above a wrapped label. sm and up: single-line tabs.
+                  'relative flex h-full flex-col items-center justify-center gap-1 px-2 py-3 text-center text-xs leading-tight',
+                  'sm:inline-flex sm:flex-row sm:gap-2 sm:px-4 sm:py-3.5 sm:text-sm sm:leading-normal md:px-5',
+                  'font-medium rounded-t-md',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900',
                   'transition-colors motion-safe:duration-150',
                   isActive
