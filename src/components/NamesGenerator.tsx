@@ -236,7 +236,7 @@ const NamesGenerator: React.FC = () => {
                       type="button"
                       onClick={() => handleCopy(value, key)}
                       title={strings.copyText(value)}
-                      className="group inline-flex min-h-[46px] items-center gap-2 text-left text-base hover:text-accent-2 hover:underline hover:decoration-dotted hover:underline-offset-4 sm:text-lg"
+                      className="group inline-flex min-h-[46px] items-center gap-2 text-left text-base hover:text-accent-2 hover:underline hover:decoration-1 hover:underline-offset-[5px] sm:text-lg"
                     >
                       {value}
                       {copied === key ? (
