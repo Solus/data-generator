@@ -195,26 +195,36 @@ const NamesGenerator: React.FC = () => {
       ) : (
         names.length > 0 && (
           <section aria-label={strings.namesGenerator} className="mt-7 border-t border-t-rule">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5 text-[13px] text-muted sm:justify-end">
-              <span>{strings.copyOrderLabel}</span>
-              <SegmentedControl
-                name={orderName}
-                ariaLabel={strings.copyOrderLabel}
-                value={order}
-                onChange={setOrder}
-                options={[
-                  { value: 'first-last', label: strings.orderFirstLast },
-                  { value: 'last-first', label: strings.orderLastFirst },
-                ]}
-              />
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-2.5 text-[13px] text-muted">
+              <p>{strings.namesCopyHint}</p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <span>{strings.copyOrderLabel}</span>
+                <SegmentedControl
+                  name={orderName}
+                  ariaLabel={strings.copyOrderLabel}
+                  value={order}
+                  onChange={setOrder}
+                  options={[
+                    { value: 'first-last', label: strings.orderFirstLast },
+                    { value: 'last-first', label: strings.orderLastFirst },
+                  ]}
+                />
+              </div>
             </div>
-            <table className="w-full border-t border-line text-left">
+            {/* Fixed column widths: the "copied" confirmation can never make the columns shift. */}
+            <table className="w-full table-fixed border-t border-line text-left">
+              <colgroup>
+                <col className="w-10 sm:w-14" />
+                <col />
+                <col />
+                <col className="w-14 sm:w-[7.5rem]" />
+              </colgroup>
               <thead>
                 <tr className="eyebrow h-10 border-b border-line">
-                  <th scope="col" className="w-10 font-medium sm:w-14">{strings.numberHeader}</th>
+                  <th scope="col" className="font-medium">{strings.numberHeader}</th>
                   <th scope="col" className="font-medium">{strings.firstNameHeader}</th>
                   <th scope="col" className="font-medium">{strings.lastNameHeader}</th>
-                  <th scope="col" className="sr-only">{strings.actions}</th>
+                  <th scope="col" className="pr-1 text-right font-medium">{strings.copy}</th>
                 </tr>
               </thead>
               <tbody>
@@ -226,10 +236,14 @@ const NamesGenerator: React.FC = () => {
                       type="button"
                       onClick={() => handleCopy(value, key)}
                       title={strings.copyText(value)}
-                      className="inline-flex min-h-[46px] cursor-copy items-center gap-1.5 text-left text-base hover:text-accent-2 sm:text-lg"
+                      className="group inline-flex min-h-[46px] cursor-copy items-center gap-2 text-left text-base hover:text-accent-2 hover:underline hover:decoration-dotted hover:underline-offset-4 sm:text-lg"
                     >
                       {value}
-                      {copied === key && <CheckIcon width={14} height={14} className="text-accent-2" />}
+                      {copied === key ? (
+                        <CheckIcon width={14} height={14} className="shrink-0 text-accent-2" />
+                      ) : (
+                        <CopyIcon width={14} height={14} className="hidden shrink-0 text-muted opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block" />
+                      )}
                     </button>
                   );
                   return (
@@ -237,23 +251,19 @@ const NamesGenerator: React.FC = () => {
                       <td className="font-mono text-xs text-muted">{pad(index + 1)}</td>
                       <td>{cell(name.firstName, `${index}-first`)}</td>
                       <td>{cell(name.lastName, `${index}-last`)}</td>
-                      <td className="text-right">
-                        {copied === rowKey ? (
-                          <span className="inline-flex h-11 items-center gap-1.5 pr-2 text-sm font-medium text-accent-2">
-                            <CheckIcon width={16} height={16} />
-                            <span className="hidden sm:inline">{strings.copied}</span>
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(full, rowKey)}
-                            aria-label={strings.copyText(full)}
-                            title={strings.copyText(full)}
-                            className="inline-flex h-11 w-11 items-center justify-center text-muted hover:text-ink"
-                          >
-                            <CopyIcon width={17} height={17} />
-                          </button>
-                        )}
+                      <td>
+                        {/* One button in a fixed-width cell, so the confirmation swaps content without moving anything.
+                            The column header names it on phones, where only the icon shows. */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(full, rowKey)}
+                          aria-label={strings.copyText(full)}
+                          title={strings.copyText(full)}
+                          className="inline-flex h-11 w-full items-center justify-end gap-1.5 pr-1 text-sm font-medium text-accent-2 hover:underline"
+                        >
+                          {copied === rowKey ? <CheckIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
+                          <span className="hidden sm:inline">{copied === rowKey ? strings.copied : strings.copy}</span>
+                        </button>
                       </td>
                     </tr>
                   );

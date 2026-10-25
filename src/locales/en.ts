@@ -43,6 +43,7 @@ const en = {
   copyAll: 'Copy all',
   copyAllCsv: 'Copy as CSV',
   copyOrderLabel: 'Copies as',
+  namesCopyHint: 'Click a first or last name to copy just that part.',
   orderFirstLast: 'First Last',
   orderLastFirst: 'Last First',
   usedBuiltInNames: 'AI is unavailable right now, so names came from the built-in list.',

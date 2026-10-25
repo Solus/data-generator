@@ -44,6 +44,7 @@ const hr = {
   copyAll: 'Kopiraj sve',
   copyAllCsv: 'Kopiraj kao CSV',
   copyOrderLabel: 'Kopira kao',
+  namesCopyHint: 'Kliknite ime ili prezime za kopiranje samo tog dijela.',
   orderFirstLast: 'Ime Prezime',
   orderLastFirst: 'Prezime Ime',
   usedBuiltInNames: 'AI trenutno nije dostupan pa su imena uzeta iz ugrađenog popisa.',
