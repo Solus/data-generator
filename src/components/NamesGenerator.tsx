@@ -236,7 +236,7 @@ const NamesGenerator: React.FC = () => {
                       type="button"
                       onClick={() => handleCopy(value, key)}
                       title={strings.copyText(value)}
-                      className="group inline-flex min-h-[46px] items-center gap-2 text-left text-base hover:text-accent-2 hover:underline hover:decoration-1 hover:underline-offset-[5px] sm:text-lg"
+                      className="group -mx-2.5 my-1.5 inline-flex min-h-[34px] items-center gap-2 rounded-[2px] px-2.5 py-1 text-left text-base hover:bg-paper focus-visible:bg-paper sm:text-lg"
                     >
                       {value}
                       {copied === key ? (
@@ -259,7 +259,7 @@ const NamesGenerator: React.FC = () => {
                           onClick={() => handleCopy(full, rowKey)}
                           aria-label={strings.copyText(full)}
                           title={strings.copyText(full)}
-                          className="inline-flex h-11 w-full items-center justify-end gap-1.5 pr-1 text-sm font-medium text-accent-2 hover:underline"
+                          className="inline-flex h-9 w-full items-center justify-end gap-1.5 rounded-[2px] px-2 text-sm font-medium text-accent-2 hover:bg-paper focus-visible:bg-paper"
                         >
                           {copied === rowKey ? <CheckIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
                           <span className="hidden sm:inline">{copied === rowKey ? strings.copied : strings.copy}</span>
