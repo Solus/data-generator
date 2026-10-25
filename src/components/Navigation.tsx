@@ -16,7 +16,7 @@ export default function Navigation() {
 
   return (
     <nav
-      aria-label={strings?.navigationLabel || 'Main navigation'}
+      aria-label={strings.navigationLabel}
       className="overflow-x-auto scrollbar-none"
     >
       <ul
@@ -55,7 +55,7 @@ export default function Navigation() {
                 <span>{item.label}</span>
                 {!isActive && (
                   <span className="sr-only">
-                    {strings?.navigateTo || 'Go to'} {item.label}
+                    {strings.navigateTo} {item.label}
                   </span>
                 )}
               </Link>

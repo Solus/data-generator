@@ -15,6 +15,8 @@ const hr = {
   ibanLegendBank: 'Šifra banke',
   ibanLegendAccount: 'Broj računa',
   dismiss: 'Zatvori',
+  navigationLabel: 'Glavna navigacija',
+  navigateTo: 'Idi na',
   appTitle: 'Generator podataka',
   appSubtitle: 'Generirajte hrvatske IBAN-ove, OIB-ove i imena jednim klikom.',
   appDescription: 'Jednostavna web aplikacija za generiranje hrvatskih IBAN-ova, OIB-ova i imena.',

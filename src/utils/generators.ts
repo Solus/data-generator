@@ -11,7 +11,7 @@ export const generateRandomDigits = (length: number): string => {
 export const calculateOIBCheckDigit = (firstTenDigits: string): string => {
   let sum = 10;
   for (let i = 0; i < 10; i++) {
-    let digit = parseInt(firstTenDigits[i], 10);
+    const digit = parseInt(firstTenDigits[i], 10);
     sum = sum + digit;
     sum = sum % 10;
     if (sum === 0) {

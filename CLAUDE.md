@@ -29,7 +29,8 @@ A small Next.js (App Router, TypeScript, Tailwind v4) tool that generates test d
 
 ## Repo quirks
 
-- Stray files at the repo root (`route.ts`, `clipboard.ts`, `oib_iban_generator.html`, duplicate `postcss.config.js`/`postcss.config.mjs`) are leftovers; the live code is under `src/`. Check `src/` before editing a same-named root file.
-- Two ESLint configs coexist (`.eslintrc.cjs` legacy and `eslint.config.mjs` flat); `next lint` behavior depends on the installed ESLint version.
+- ESLint 9 with the flat config in `eslint.config.mjs` (don't re-add a legacy `.eslintrc`; with ESLint 8 it made `next lint` crash). `eslint-config-next` is pinned to match the Next version.
+- Translation strings are typed as `typeof en`, so a key missing from `src/locales/en.ts` is a compile error; `hr.ts` must have the same keys.
+- Tailwind 4 is configured in CSS (`globals.css`) plus `postcss.config.mjs`; there is no `tailwind.config`.
 - `package.json` uses `latest` for next/react/typescript, so installs can drift.
 - `README.md` is still the create-next-app boilerplate.

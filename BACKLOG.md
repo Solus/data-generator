@@ -7,10 +7,10 @@ UX improvements and open questions found in the June UX review but not yet done.
 
 ## Unverified
 - Copy confirmation behaviour, keyboard navigation and contrast ratios haven't been audited.
-- `npm run lint` hasn't been run; two ESLint configs coexist (`.eslintrc.cjs` and `eslint.config.mjs`).
 - Retry/fallback across the two Gemini models has only been tested for single-model failures.
 
 ## Housekeeping
-- Stray root files (`route.ts`, `clipboard.ts`, `oib_iban_generator.html`, duplicate `postcss.config.js`) look like leftovers.
+- `Navigation.tsx` uses a `scrollbar-none` class that isn't defined anywhere (no-op); add a utility or drop it.
+- Unused default Next assets in `public/` (`file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`) — nothing references them.
 - `package.json` pins next/react/typescript to `latest`.
 - README is still the create-next-app boilerplate.

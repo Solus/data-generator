@@ -8,7 +8,7 @@ import { LANG_COOKIE, type Lang } from '@/utils/lang';
 type LocaleContextShape = {
   lang: Lang;
   setLang: (l: Lang) => void;
-  strings: Record<string, any>;
+  strings: typeof en;
 };
 
 const LocaleContext = createContext<LocaleContextShape>({ lang: 'en', setLang: () => {}, strings: en });

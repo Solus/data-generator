@@ -15,6 +15,8 @@ const en = {
   ibanLegendBank: 'Bank code',
   ibanLegendAccount: 'Account number',
   dismiss: 'Dismiss',
+  navigationLabel: 'Main navigation',
+  navigateTo: 'Go to',
   appTitle: 'Data Generator',
   appSubtitle: 'Generate Croatian IBANs, OIBs, and names with a single click.',
   appDescription: 'A simple web application to generate Croatian IBANs, OIBs, and names.',
