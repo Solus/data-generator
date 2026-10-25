@@ -33,7 +33,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ value, onChange }) => {
             onChange={() => onChange(pref)}
             className="peer sr-only"
           />
-          <span className="flex h-8 w-7 items-center justify-center gap-1.5 rounded-[1px] text-[13px] text-muted transition-colors hover:text-ink peer-checked:bg-ink peer-checked:text-on-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent-2 sm:w-auto sm:px-2.5">
+          <span className="flex h-8 w-7 items-center justify-center gap-1.5 rounded-[1px] text-[13px] text-muted transition-colors peer-not-checked:hover:text-ink peer-checked:bg-ink peer-checked:text-on-ink peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-accent-2 sm:w-auto sm:px-2.5">
             <Icon width={15} height={15} />
             <span className="hidden sm:inline">{label}</span>
             <span className="sr-only sm:hidden">{label}</span>
