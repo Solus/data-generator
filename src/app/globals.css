@@ -20,6 +20,10 @@
   --dim: #9aa0a8; /* dimension lines and ticks */
   --cross: #9aa0a8; /* corner crosshairs */
   --accent: #c8391f; /* vermilion: active marker, first IBAN segment */
+  --accent-strong: #a32d18; /* hover of accent-filled buttons */
+  --on-accent: #ffffff; /* text on accent-filled buttons */
+  --panel: #f3f6fa; /* tinted result panel */
+  --panel-line: #dce3eb;
   --accent-2: #2f5d8a; /* blue: bank code, links */
   --on-ink: #ffffff; /* text on the primary button */
 }
@@ -39,6 +43,10 @@
   --dim: #6b7280;
   --cross: #4a4f57;
   --accent: #ff6f55;
+  --accent-strong: #ff8a73;
+  --on-accent: #141619; /* the dark-mode accent is light, so text on it is dark */
+  --panel: #1a1f26;
+  --panel-line: #2a313b;
   --accent-2: #7fb2ea;
   --on-ink: #141619;
 }
@@ -57,6 +65,10 @@
   --color-dim: var(--dim);
   --color-cross: var(--cross);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
+  --color-panel: var(--panel);
+  --color-panel-line: var(--panel-line);
   --color-accent-2: var(--accent-2);
   --color-on-ink: var(--on-ink);
   --font-sans: var(--font-sans-app), system-ui, sans-serif;
@@ -78,10 +90,11 @@
    overflow. --figure-units is the line's width in em (digits are 0.6em wide in the mono font, plus
    gaps); the offset is the page chrome around the figure (phone / sm and up). */
 @utility figure {
-  --figure-offset: 4.2rem;
+  /* --figure-extra(-phone): extra horizontal space taken by a panel around the figure */
+  --figure-offset: calc(4.2rem + var(--figure-extra-phone, 0rem));
   font-size: min(3rem, calc((100vw - var(--figure-offset)) / var(--figure-units, 14)));
   @media (min-width: 40rem) {
-    --figure-offset: 11.6rem;
+    --figure-offset: calc(11.6rem + var(--figure-extra, 0rem));
     font-size: min(var(--figure-max, 3.5rem), calc((100vw - var(--figure-offset)) / var(--figure-units, 14)));
   }
 }

@@ -10,7 +10,7 @@ const PrimaryButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = (
     type="button"
     aria-keyshortcuts={GENERATE_SHORTCUT_KEY.toUpperCase()}
     {...rest}
-    className={`inline-flex h-[52px] min-w-0 flex-1 items-center justify-between gap-6 rounded-[2px] bg-ink px-5 text-[15px] font-medium text-on-ink transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 sm:h-12 sm:flex-none sm:gap-8 ${className}`}
+    className={`inline-flex h-[52px] min-w-0 flex-1 items-center justify-between gap-6 rounded-[2px] bg-accent px-5 text-[15px] font-medium text-on-accent hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60 sm:h-12 sm:flex-none sm:gap-8 ${className}`}
   >
     <span>{children}</span>
     <span className="flex items-center gap-3">

@@ -21,7 +21,7 @@ const PageIntro: React.FC<{ page: PageKey }> = ({ page }) => {
 
   return (
     <header>
-      <p className="eyebrow">
+      <p className="eyebrow" style={{ color: 'var(--accent)' }}>
         {pad(index + 1)} — {strings[def.tabKey]}
       </p>
       <h1 className="mt-2 text-[1.75rem] font-medium leading-[1.1] tracking-[-0.025em] sm:text-[2.125rem]">{strings[def.titleKey]}</h1>    </header>

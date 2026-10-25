@@ -143,7 +143,7 @@ const IbanGenerator: React.FC = () => {
         </p>
       )}
 
-      <section aria-labelledby="iban-result-label" className="mt-7 border-y border-b-line border-t-rule pb-5 pt-4 sm:pb-6">
+      <section aria-labelledby="iban-result-label" className="mt-7 border border-t-2 border-panel-line border-t-accent bg-panel px-4 pb-5 pt-4 sm:px-7 sm:pb-6">
         <div className="mb-3 flex items-center justify-between sm:mb-5">
           <h2 id="iban-result-label" className="eyebrow">{strings.ibanResultLabel}</h2>
           <span className="hidden text-[13px] text-muted sm:block">{strings.clickToCopy}</span>
@@ -156,7 +156,7 @@ const IbanGenerator: React.FC = () => {
           onClick={handleCopy}
           aria-label={`${strings.copyIban}: ${generatedIban}`}
           className="figure flex min-h-[1em] gap-[0.5em] whitespace-nowrap text-left font-mono font-medium leading-none tracking-[-0.01em]"
-          style={{ '--figure-units': 13.8, '--figure-max': '4.25rem' } as React.CSSProperties}
+          style={{ '--figure-units': 13.8, '--figure-max': '4.125rem', '--figure-extra-phone': '2.1rem', '--figure-extra': '3.6rem' } as React.CSSProperties}
         >
           {generatedIban
             ? segments.map((s) => (
