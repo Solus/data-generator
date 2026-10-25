@@ -24,7 +24,7 @@ export default function Navigation() {
               isActive ? 'font-semibold text-ink' : 'text-ink-soft hover:text-accent',
             ].join(' ')}
           >
-            <span className={`font-mono text-[11px] sm:text-xs ${isActive ? 'font-medium text-accent' : 'text-muted'}`}>{pad(i + 1)}</span>
+            <span className={`font-mono text-xs ${isActive ? 'font-medium text-accent' : 'text-muted'}`}>{pad(i + 1)}</span>
             <span className="hidden sm:inline">{strings[item.titleKey]}</span>
             <span className="sm:hidden">{strings[item.tabKey]}</span>
             {isActive && <span aria-hidden="true" className="absolute inset-x-0 -bottom-px h-[3px] bg-accent sm:right-9" />}
