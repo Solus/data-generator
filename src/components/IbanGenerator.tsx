@@ -79,7 +79,7 @@ const IbanGenerator: React.FC = () => {
           <i className="fas fa-university mr-2 text-gray-600 dark:text-gray-400"></i>
           {strings.selectBankLabel}
         </label>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           {/* Dropdown (visually disabled when random is ON) */}
           <div
             className={`flex-1 ${isRandomSelected
@@ -152,7 +152,7 @@ const IbanGenerator: React.FC = () => {
         {/* teal-tinted pill with embedded copy */}
         <div className="relative rounded-xl border border-teal-200 dark:border-slate-700 ring-1 ring-inset ring-teal-100 dark:ring-slate-700/60 bg-teal-50 dark:bg-slate-800
           dark:shadow-[0_2px_4px_-1px_rgba(0,0,0,0.65),0_1px_2px_rgba(0,0,0,0.45)]">
-          <div className="pl-4 pr-12 py-3 text-3xl text-left font-mono tracking-wide text-gray-900 dark:text-slate-100">
+          <div className="pl-4 pr-12 py-3 text-[clamp(11px,3.7vw,16px)] tracking-normal min-[420px]:text-xl min-[420px]:tracking-wide sm:text-3xl text-left font-mono break-all text-gray-900 dark:text-slate-100">
             {generatedIban ? (
               <>
                 <span className="font-mono text-amber-700 dark:text-amber-300 font-semibold">

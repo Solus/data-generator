@@ -1,16 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateRandomDigits, calculateOIBCheckDigit } from '@/utils/generators';
 import CopyButton from './CopyButton';
 import { useLocale } from '@/utils/locale';
 
 const OibGenerator: React.FC = () => {
-  const [generatedOib, setGeneratedOib] = useState(() => {
-    const firstTenDigits = generateRandomDigits(10);
-    const checkDigit = calculateOIBCheckDigit(firstTenDigits);
-    return firstTenDigits + checkDigit;
-  });
+  const [generatedOib, setGeneratedOib] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { strings } = useLocale();
 
@@ -20,6 +16,11 @@ const OibGenerator: React.FC = () => {
     const checkDigit = calculateOIBCheckDigit(firstTenDigits);
     setGeneratedOib(firstTenDigits + checkDigit);
   };
+
+  // Generate after mount: a random value during render differs between server and browser (hydration mismatch).
+  useEffect(() => {
+    generateOib();
+  }, []);
 
   return (
     <div className="space-y-6">

@@ -4,7 +4,9 @@ import { Inter } from 'next/font/google';
 import Navigation from '@/components/Navigation';
 import ThemeToggleWrapper from '@/components/ThemeToggleWrapper';
 import LanguageSelector from '@/components/LanguageSelector';
+import { cookies } from 'next/headers';
 import { LocaleProvider } from '@/utils/locale';
+import { LANG_COOKIE, type Lang } from '@/utils/lang';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,14 +15,21 @@ export const metadata: Metadata = {
   description: 'A simple web application to generate Croatian IBANs, OIBs, and names.',
 };
 
-export default function RootLayout({
+// Runs before first paint so the saved/system theme is applied with no flash of the wrong one.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}})();`;
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang: Lang = (await cookies()).get(LANG_COOKIE)?.value === 'en' ? 'en' : 'hr';
+
   return (
-	<html lang="en">
+	// suppressHydrationWarning: the inline theme script changes <html class> before React hydrates.
+	<html lang={lang} suppressHydrationWarning>
 	  <head>
+		<script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
 		{/* Font Awesome CDN for icons */}
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossOrigin="anonymous" referrerPolicy="no-referrer" />
 		<style>{`
@@ -43,7 +52,7 @@ export default function RootLayout({
         dark:bg-slate-950 dark:text-slate-100
         dark:bg-none dark:[background-image:none]
         transition-colors`}>
-				<LocaleProvider>
+				<LocaleProvider initialLang={lang}>
 					<div className="min-h-screen">
 						<div className="mx-auto max-w-5xl px-6 py-12">
 							<div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

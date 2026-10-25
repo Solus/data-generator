@@ -16,6 +16,7 @@
 
 /* Override the colors for dark mode */
 .dark {
+  color-scheme: dark; /* native controls and scrollbars follow the theme */
   --background: #0a0a0a;
   --foreground: #ededed;
 }
