@@ -25,6 +25,8 @@ const hr = {
   ibanDimCheck: 'Država + KB',
   ibanDimBank: 'Šifra banke',
   ibanDimAccount: 'Broj računa',
+  specLength: 'Duljina',
+  specAlgorithm: 'Algoritam',
   digitsCount: (n: number) => `${n} znamenki`,
   tabIban: 'IBAN',
   tabOib: 'OIB',

@@ -25,6 +25,8 @@ const en = {
   ibanDimCheck: 'HR + check',
   ibanDimBank: 'Bank code',
   ibanDimAccount: 'Account no.',
+  specLength: 'Length',
+  specAlgorithm: 'Algorithm',
   digitsCount: (n: number) => `${n} digits`,
   tabIban: 'IBAN',
   tabOib: 'OIB',
