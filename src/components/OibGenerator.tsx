@@ -72,7 +72,7 @@ const OibGenerator: React.FC = () => {
           type="button"
           onClick={handleCopy}
           aria-label={`${strings.copyOib}: ${generatedOib}`}
-          className="figure inline-block min-h-[1em] cursor-copy whitespace-nowrap text-left font-mono font-medium leading-none tracking-[-0.02em]"
+          className="figure inline-block min-h-[1em] whitespace-nowrap text-left font-mono font-medium leading-none tracking-[-0.02em]"
           style={{ '--figure-units': 7.2, '--figure-max': '6.5rem' } as React.CSSProperties}
         >
           <Dimensioned label={strings.digitsCount(OIB_LENGTH)}>{generatedOib || ' '}</Dimensioned>

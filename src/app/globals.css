@@ -83,6 +83,15 @@
   }
 }
 
+/* Tailwind 4 resets buttons to the plain arrow cursor; restore the standard hand on every enabled button
+   (disabled ones keep their own cursor via the disabled: utilities). */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
 /* Visible keyboard focus everywhere, in the accent colour. */
 :focus-visible {
   outline: 2px solid var(--accent-2);
