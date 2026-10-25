@@ -12,7 +12,8 @@ export function useGenerateShortcut(onGenerate: () => void) {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== GENERATE_SHORTCUT_KEY) return;
+      // e.key can be undefined on synthetic events (e.g. browser autofill), so don't call methods on it blindly.
+      if (e.key?.toLowerCase() !== GENERATE_SHORTCUT_KEY) return;
       if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.defaultPrevented) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest('input, textarea, select, [contenteditable="true"], [role="listbox"], [role="combobox"], [role="option"]')) return;

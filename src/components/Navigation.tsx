@@ -23,7 +23,6 @@ export default function Navigation() {
         className="flex items-stretch gap-1 md:gap-2 px-2 md:px-4
         border-b border-gray-200 dark:border-slate-600
         bg-white/90 dark:bg-slate-900/95 backdrop-blur-sm rounded-t-3xl"
-        role="tablist"
       >
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -31,8 +30,6 @@ export default function Navigation() {
             <li key={item.href} className="flex-1 sm:flex-none">
               <Link
                 href={item.href}
-                role="tab"
-                aria-selected={isActive}
                 aria-current={isActive ? 'page' : undefined}
                 className={[
                   // Phones: equal-width tabs, icon above a wrapped label. sm and up: single-line tabs.

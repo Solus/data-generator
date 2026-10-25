@@ -8,10 +8,11 @@ export const generateRandomDigits = (length: number): string => {
   return result;
 };
 
-export const calculateOIBCheckDigit = (firstTenDigits: string): string => {
+// ISO 7064 MOD 11,10 check digit. Used by the OIB and by the control digit of Croatian account numbers.
+const mod1110CheckDigit = (digits: string): string => {
   let sum = 10;
-  for (let i = 0; i < 10; i++) {
-    const digit = parseInt(firstTenDigits[i], 10);
+  for (let i = 0; i < digits.length; i++) {
+    const digit = parseInt(digits[i], 10);
     sum = sum + digit;
     sum = sum % 10;
     if (sum === 0) {
@@ -25,6 +26,15 @@ export const calculateOIBCheckDigit = (firstTenDigits: string): string => {
     checkDigit = 0;
   }
   return checkDigit.toString();
+};
+
+export const calculateOIBCheckDigit = (firstTenDigits: string): string => mod1110CheckDigit(firstTenDigits.slice(0, 10));
+
+// A 10-digit Croatian account number: 9 random digits plus a valid control digit, so the IBAN also
+// passes strict domestic validators (not just the generic IBAN mod-97 check).
+export const generateAccountNumber = (): string => {
+  const firstNine = generateRandomDigits(9);
+  return firstNine + mod1110CheckDigit(firstNine);
 };
 
 export const calculateIBANCheckDigits = (ibanWithoutCheckDigits: string): string => {

@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const { numNames } = await request.json();
 
-    if (!numNames || typeof numNames !== 'number' || numNames < 1 || numNames > 50) {
+    if (!Number.isInteger(numNames) || numNames < 1 || numNames > 50) {
       return NextResponse.json({ error: 'Invalid number of names requested.' }, { status: 400 });
     }
 
@@ -31,11 +31,12 @@ export async function POST(request: Request) {
 
     for (const model of models) {
       for (let attempt = 0; attempt < 2; attempt++) {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        // Key goes in a header, not the URL, so it can't leak into logs or error messages that print the URL.
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
         try {
           const geminiResponse = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
             body: JSON.stringify(payload),
             signal: AbortSignal.timeout(20000),
           });

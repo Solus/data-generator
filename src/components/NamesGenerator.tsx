@@ -14,7 +14,9 @@ interface Name {
 }
 
 const NamesGenerator: React.FC = () => {
-  const [numNames, setNumNames] = useState<number>(10);
+  // null while the field is empty, so the user can clear it and type a new number (restored to 10 on blur).
+  const [numNames, setNumNames] = useState<number | null>(10);
+  const count = numNames ?? 10;
   const [names, setNames] = useState<Name[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +33,7 @@ const NamesGenerator: React.FC = () => {
   const handleCopy = async (text: string, key: string) => {
     const success = await copyToClipboard(text);
     if (!success) {
-      setError('Failed to copy. Please copy manually.');
+      setError(strings.copyFailed);
     } else {
       setError(null);
       setCopyStatus(prev => ({ ...prev, [key]: 'success' }));
@@ -41,12 +43,15 @@ const NamesGenerator: React.FC = () => {
     }
   };
 
-  const incrementNum = () => setNumNames(n => Math.min(50, n + 1));
-  const decrementNum = () => setNumNames(n => Math.max(1, n - 1));
+  const incrementNum = () => setNumNames(n => Math.min(50, (n ?? 0) + 1));
+  const decrementNum = () => setNumNames(n => Math.max(1, (n ?? 2) - 1));
   const onNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(e.target.value);
-    if (Number.isNaN(v)) return;
-    setNumNames(Math.min(50, Math.max(1, v)));
+    const digits = e.target.value.replace(/\D/g, '');
+    if (digits === '') {
+      setNumNames(null);
+      return;
+    }
+    setNumNames(Math.min(50, Math.max(1, parseInt(digits, 10))));
   };
 
   const generateNames = async () => {
@@ -58,7 +63,7 @@ const NamesGenerator: React.FC = () => {
       const response = await fetch('/api/generate-names', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numNames }),
+        body: JSON.stringify({ numNames: count }),
       });
 
       const result = await response.json();
@@ -75,14 +80,16 @@ const NamesGenerator: React.FC = () => {
         .map((line: string) => {
           const parts = line.split(',');
           return { firstName: parts[0].trim(), lastName: parts[1].trim() };
-        });
+        })
+        .filter((n: Name) => n.firstName && n.lastName)
+        .slice(0, count); // the model sometimes returns more than requested
 
       if (newNames.length === 0) throw new Error(strings.noNamesGenerated);
       setNames(newNames);
     } catch (e: unknown) {
       // AI unavailable or returned nothing usable: use the built-in list instead.
       console.error(e);
-      setNames(generateLocalNames(numNames));
+      setNames(generateLocalNames(count));
       setNotice(strings.usedBuiltInNames);
     } finally {
       setLoading(false);
@@ -117,8 +124,9 @@ const NamesGenerator: React.FC = () => {
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={numNames}
+                value={numNames ?? ''}
                 onChange={onNumChange}
+                onBlur={() => setNumNames(n => n ?? 10)}
                 min={1}
                 max={50}
                 className="w-24 text-center px-2 py-2 bg-transparent font-mono text-gray-900 dark:text-gray-100 focus:outline-none"

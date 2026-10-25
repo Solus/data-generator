@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import CustomDropdown from './CustomDropdown';
 import CopyButton from './CopyButton';
-import { generateRandomDigits, calculateIBANCheckDigits } from '@/utils/generators';
+import { generateAccountNumber, calculateIBANCheckDigits } from '@/utils/generators';
 import { useLocale } from '@/utils/locale';
 import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
 import ShortcutHint from './ShortcutHint';
@@ -52,7 +52,7 @@ const IbanGenerator: React.FC = () => {
     const selectedBank = bankData[bankKeyForGeneration];
     const currentVbdi = selectedBank.vbdi;
 
-    const accountNumber = generateRandomDigits(10);
+    const accountNumber = generateAccountNumber();
     const countryCode = 'HR';
     const bbban = currentVbdi + accountNumber;
     const checkDigits = calculateIBANCheckDigits(countryCode + '00' + bbban);

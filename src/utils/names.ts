@@ -39,8 +39,9 @@ export const generateLocalNames = (count: number): { firstName: string; lastName
   const seen = new Set<string>();
   const result: { firstName: string; lastName: string }[] = [];
 
-  // At most firstNames x LAST_NAMES distinct pairs exist, far more than the 50 the UI allows.
-  while (result.length < count) {
+  // Cap at the number of distinct pairs so the loop below always terminates (the UI allows at most 50).
+  const target = Math.min(count, firstNames.length * LAST_NAMES.length);
+  while (result.length < target) {
     const firstName = pick(firstNames);
     const lastName = pick(LAST_NAMES);
     const key = `${firstName} ${lastName}`;
