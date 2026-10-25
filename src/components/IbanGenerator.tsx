@@ -7,7 +7,7 @@ import CustomDropdown from './CustomDropdown';
 import Dimensioned from './Dimensioned';
 import PrimaryButton from './PrimaryButton';
 import SpecTable from './SpecTable';
-import Switch from './Switch';
+import { ShuffleIcon } from './icons';
 import { generateAccountNumber, calculateIBANCheckDigits } from '@/utils/generators';
 import { useLocale } from '@/utils/locale';
 import { useCopyFeedback } from '@/utils/useCopyFeedback';
@@ -26,33 +26,25 @@ const bankData: Record<string, Bank> = {
   rba: { name: 'Raiffeisenbank Hrvatska', vbdi: '2484008' },
 };
 
+// "Random bank" is the first, default option of the dropdown: each generation then picks a bank at
+// random, and the IBAN's bank-code caption shows which one was used.
+const RANDOM_KEY = 'random';
+const bankOptions: Record<string, Bank> = { [RANDOM_KEY]: { name: '', vbdi: '' }, ...bankData };
+
 const IbanGenerator: React.FC = () => {
-  const [selectedBankKey, setSelectedBankKey] = useState<string>('');
+  const [selectedBankKey, setSelectedBankKey] = useState<string>(RANDOM_KEY);
   const [generatedIban, setGeneratedIban] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const [isRandomSelected, setIsRandomSelected] = useState<boolean>(true);
   const { strings } = useLocale();
   const { status: copyStatus, copy } = useCopyFeedback();
 
-  const generateAndSetIban = (overrideBankKey?: string) => {
+  const generateAndSetIban = (bankKey: string = selectedBankKey) => {
     setError(null);
 
-    let bankKeyForGeneration = overrideBankKey || selectedBankKey;
-
-    // This part handles the "random" case, which should only trigger
-    // when the function is called without a specific key (e.g., from the button or on initial load)
-    if (!overrideBankKey && isRandomSelected) {
+    let bankKeyForGeneration = bankKey;
+    if (bankKey === RANDOM_KEY) {
       const bankKeys = Object.keys(bankData);
-      const randomKey = bankKeys[Math.floor(Math.random() * bankKeys.length)];
-      bankKeyForGeneration = randomKey;
-      // Also update the dropdown to show which bank was randomly selected.
-      setSelectedBankKey(randomKey);
-    }
-
-    if (!bankKeyForGeneration || !bankData[bankKeyForGeneration]) {
-      setError(strings.selectBankOrRandom);
-      setGeneratedIban('');
-      return;
+      bankKeyForGeneration = bankKeys[Math.floor(Math.random() * bankKeys.length)];
     }
 
     const selectedBank = bankData[bankKeyForGeneration];
@@ -86,7 +78,6 @@ const IbanGenerator: React.FC = () => {
 
   const handleBankChange = (key: string) => {
     setSelectedBankKey(key);
-    setIsRandomSelected(false); // Uncheck random when a bank is selected manually
     generateAndSetIban(key);
   };
 
@@ -104,45 +95,42 @@ const IbanGenerator: React.FC = () => {
     <div>
       <ActionBar
         options={
-          <>
-            <div className="flex flex-col gap-1.5 sm:w-[360px]">
-              <span id="bank-label" className="text-[13px] font-medium text-ink-soft">{strings.bankLabel}</span>
-              <CustomDropdown
-                options={bankData}
-                value={selectedBankKey}
-                onChange={handleBankChange}
-                disabled={isRandomSelected}
-                labelledBy="bank-label"
-                renderDisplay={(key) =>
-                  key ? (
-                    <span className="flex flex-1 items-center justify-between gap-3">
-                      {bankData[key]?.name}
-                      <span className="font-mono text-[13px] text-muted">{bankData[key]?.vbdi}</span>
-                    </span>
-                  ) : (
-                    <span className="text-muted">{strings.selectBankPlaceholder}</span>
-                  )
-                }
-                renderOption={(key, option) => (
+          <div className="flex flex-col gap-1.5 sm:w-[360px]">
+            <span id="bank-label" className="text-[13px] font-medium text-ink-soft">{strings.bankLabel}</span>
+            <CustomDropdown
+              options={bankOptions}
+              value={selectedBankKey}
+              onChange={handleBankChange}
+              labelledBy="bank-label"
+              separatorAfter={RANDOM_KEY}
+              renderDisplay={(key) =>
+                key === RANDOM_KEY ? (
+                  <span className="flex items-center gap-2.5">
+                    <ShuffleIcon />
+                    {strings.randomBank}
+                  </span>
+                ) : (
+                  <span className="flex flex-1 items-center justify-between gap-3">
+                    {bankData[key]?.name}
+                    <span className="font-mono text-[13px] text-muted">{bankData[key]?.vbdi}</span>
+                  </span>
+                )
+              }
+              renderOption={(key, option) =>
+                key === RANDOM_KEY ? (
+                  <span className="flex items-center gap-2.5">
+                    <ShuffleIcon />
+                    {strings.randomBank}
+                  </span>
+                ) : (
                   <div className="flex justify-between gap-3">
                     <span>{option.name}</span>
                     <span className="font-mono text-[13px] text-muted">{option.vbdi}</span>
                   </div>
-                )}
-              />
-            </div>
-            <Switch
-              id="random-iban"
-              checked={isRandomSelected}
-              onChange={(isChecked) => {
-                setIsRandomSelected(isChecked);
-                if (isChecked) {
-                  setSelectedBankKey('');
-                }
-              }}
-              label={strings.randomBank}
+                )
+              }
             />
-          </>
+          </div>
         }
       >
         <CopyButton status={copyStatus} onClick={handleCopy} title={strings.copyIban} />

@@ -13,6 +13,8 @@ interface CustomDropdownProps<T> {
   /** id of the element that labels this dropdown (for screen readers) */
   labelledBy?: string;
   className?: string;
+  /** Draws a divider under the option with this key (e.g. to set a "default" option apart). */
+  separatorAfter?: string;
 }
 
 // Select-only combobox following the WAI-ARIA pattern: the button owns focus and points at the
@@ -27,6 +29,7 @@ const CustomDropdown = <T,>({
   disabled = false,
   labelledBy,
   className = '',
+  separatorAfter,
 }: CustomDropdownProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -139,7 +142,7 @@ const CustomDropdown = <T,>({
               id={optionId(index)}
               role="option"
               aria-selected={key === value}
-              className={`cursor-pointer px-4 py-3 text-[15px] ${index === activeIndex ? 'bg-paper' : ''} ${key === value ? 'font-semibold' : ''}`}
+              className={`cursor-pointer px-4 py-3 text-[15px] ${index === activeIndex ? 'bg-paper' : ''} ${key === value ? 'font-semibold' : ''} ${key === separatorAfter ? 'border-b border-line' : ''}`}
               onMouseEnter={() => setActiveIndex(index)}
               // mousedown (not click) so the button keeps focus and the outside-click handler isn't involved
               onMouseDown={(e) => {

@@ -50,8 +50,6 @@ const en = {
   ibanGenerator: 'IBAN Generator',
   oibGenerator: 'OIB Generator',
   namesGenerator: 'Names Generator',
-  selectBankOrRandom: 'Please select a bank or use the "Random" option.',
-  selectBankPlaceholder: '-- Select a Bank --',
   randomBank: 'Random bank',
   copyIban: 'Copy IBAN',
   noIbanToCopy: 'No IBAN to copy. Please generate one first.',

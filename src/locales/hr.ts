@@ -51,8 +51,6 @@ const hr = {
   ibanGenerator: 'Generator IBAN-a',
   oibGenerator: 'Generator OIB-a',
   namesGenerator: 'Generator imena',
-  selectBankOrRandom: 'Odaberite banku ili upotrijebite opciju "Nasumična banka".',
-  selectBankPlaceholder: '-- Odaberite banku --',
   randomBank: 'Nasumična banka',
   copyIban: 'Kopiraj IBAN',
   noIbanToCopy: 'Nema IBAN-a za kopiranje. Najprije generirajte IBAN.',
