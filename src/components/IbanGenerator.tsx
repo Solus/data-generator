@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import CustomDropdown from './CustomDropdown';
 import CopyButton from './CopyButton';
+import Dimensioned from './Dimensioned';
+import PrimaryButton from './PrimaryButton';
+import Switch from './Switch';
 import { generateAccountNumber, calculateIBANCheckDigits } from '@/utils/generators';
 import { useLocale } from '@/utils/locale';
 import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
-import ShortcutHint from './ShortcutHint';
 
 interface Bank {
   name: string;
@@ -74,164 +76,104 @@ const IbanGenerator: React.FC = () => {
     generateAndSetIban(key);
   };
 
+  // HR + 2 check digits | 7-digit bank code | 10-digit account number
+  const segments = [
+    { text: generatedIban.substring(0, 4), color: 'text-accent', swatch: 'bg-accent', dim: strings.ibanDimCheck, legend: strings.ibanLegendCheck },
+    { text: generatedIban.substring(4, 11), color: 'text-accent-2', swatch: 'bg-accent-2', dim: strings.ibanDimBank, legend: strings.ibanLegendBank },
+    { text: generatedIban.substring(11, 21), color: 'text-ink', swatch: 'bg-ink', dim: strings.ibanDimAccount, legend: strings.ibanLegendAccount },
+  ];
+
   return (
-    // Container now inherits background from parent card
-    <div className="space-y-6">
-      {/* Bank Selection & Random Switch */}
-      <div className="space-y-2">
-        <label id="bank-label" className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
-          <i className="fas fa-university mr-2 text-gray-600 dark:text-gray-400"></i>
-          {strings.selectBankLabel}
-        </label>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          {/* Dropdown (visually disabled when random is ON) */}
-          <div
-            className={`flex-1 ${isRandomSelected
-              ? 'cursor-not-allowed rounded-md bg-gray-100 dark:bg-slate-700/40 ring-1 ring-inset ring-gray-300/60 dark:ring-slate-600/60'
-              : ''}`}
-          >
-            <CustomDropdown
-              options={bankData}
-              value={selectedBankKey}
-              onChange={handleBankChange}
-              disabled={isRandomSelected}
-              labelledBy="bank-label"
-              renderDisplay={(key) => (
-                <span
-                  className={
-                    key
-                      ? 'text-gray-900 dark:text-gray-100'
-                      : isRandomSelected
-                        ? 'text-gray-500 dark:text-slate-500'
-                        : 'text-gray-500 dark:text-slate-400'
-                  }
-                >
-                  {key ? `${bankData[key]?.name} (${bankData[key]?.vbdi})` : strings.selectBankPlaceholder}
-                </span>
-              )}
-              renderOption={(key, option) => (
-                <div className="flex justify-between cursor-pointer">
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{option.name}</span>
-                  <span className="text-gray-600 dark:text-slate-400">{option.vbdi}</span>
-                </div>
-              )}
-            />
-          </div>
-
-          {/* Material switch for Random Bank */}
-          <div className="flex items-center">
-            <span className="mr-3 font-medium text-gray-700 dark:text-gray-300">{strings.randomBank}</span>
-            <label htmlFor="random-iban" className="relative inline-flex items-center cursor-pointer select-none">
-              <input
-                id="random-iban"
-                type="checkbox"
-                checked={isRandomSelected}
-                onChange={(e) => {
-                  const isChecked = e.target.checked;
-                  setIsRandomSelected(isChecked);
-                  if (isChecked) {
-                    setSelectedBankKey('');
-                  }
-                }}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 dark:bg-slate-700 rounded-full transition-colors
-                  peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-700
-                  peer-focus:ring-offset-2 peer-focus:ring-offset-white dark:peer-focus:ring-offset-gray-900
-                  peer-checked:bg-teal-500 shadow-inner dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"></div>
-              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white dark:bg-slate-200 rounded-full
-                  border border-gray-300 dark:border-slate-400 transform transition-transform peer-checked:translate-x-5
-                  shadow-sm dark:shadow-[0_0_0_1px_rgba(0,0,0,0.4),0_1px_2px_rgba(0,0,0,0.5)]"></div>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Generated IBAN Display */}
-      <div className="space-y-2">
-        <label className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
-          <i className="fas fa-file-invoice-dollar mr-2 text-gray-600 dark:text-gray-400"></i>
-          {strings.generatedIbanLabel}
-        </label>
-
-        {/* teal-tinted pill with embedded copy */}
-        <div className="relative rounded-xl border border-teal-200 dark:border-slate-700 ring-1 ring-inset ring-teal-100 dark:ring-slate-700/60 bg-teal-50 dark:bg-slate-800
-          dark:shadow-[0_2px_4px_-1px_rgba(0,0,0,0.65),0_1px_2px_rgba(0,0,0,0.45)]">
-          <div className="pl-4 pr-12 py-3 text-[clamp(11px,3.7vw,16px)] tracking-normal min-[420px]:text-xl min-[420px]:tracking-wide sm:text-3xl text-left font-mono break-all text-gray-900 dark:text-slate-100">
-            {generatedIban ? (
-              <>
-                <span className="font-mono text-amber-700 dark:text-amber-300 font-semibold">
-                  {generatedIban.substring(0, 4)}
-                </span>
-                <span className="font-mono text-cyan-800 dark:text-cyan-300 font-semibold">
-                  {generatedIban.substring(4, 11)}
-                </span>
-                <span className="font-mono text-fuchsia-700 dark:text-fuchsia-300 font-semibold">
-                  {generatedIban.substring(11, 21)}
-                </span>
-              </>
-            ) : (
-              '\u00a0'
-            )}
-          </div>
-
-          {/* Embedded copy button (ghost by default, darker hollow icon) */}
-          <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
-            <CopyButton
-              textToCopy={generatedIban}
-              className="w-10 h-10 rounded-md cursor-pointer bg-transparent border-0 shadow-none
-                hover:bg-teal-100 dark:hover:bg-slate-700/60
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2
-                focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900
-                [&>i]:text-teal-600 dark:[&>i]:text-teal-400 [&>i]:[font-weight:400]
-                [&>svg]:fill-transparent [&>svg]:stroke-current [&>svg]:stroke-2 [&>svg]:text-teal-600 dark:[&>svg]:text-teal-400
-                hover:[&>i]:text-teal-700 dark:hover:[&>i]:text-teal-300 hover:[&>svg]:text-teal-700 dark:hover:[&>svg]:text-teal-300"
-              title={strings.copyIban}
-              onNoText={() => setError(strings.noIbanToCopy)}
-              onCopyError={(message) => setError(message)}
-            />
-          </div>
+    <div className="mt-7">
+      <section aria-labelledby="iban-result-label" className="border-y border-b-line border-t-rule pb-5 pt-5 sm:pb-6">
+        <div className="mb-3 flex items-center justify-between sm:mb-5">
+          <h2 id="iban-result-label" className="eyebrow">{strings.ibanResultLabel}</h2>
+          <CopyButton
+            textToCopy={generatedIban}
+            title={strings.copyIban}
+            onNoText={() => setError(strings.noIbanToCopy)}
+            onCopyError={(message) => setError(message)}
+          />
         </div>
 
-        {/* Legend for the coloured segments */}
-        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600 dark:text-slate-400">
-          {[
-            [strings.ibanLegendCheck, 'bg-amber-700 dark:bg-amber-300'],
-            [strings.ibanLegendBank, 'bg-cyan-800 dark:bg-cyan-300'],
-            [strings.ibanLegendAccount, 'bg-fuchsia-700 dark:bg-fuchsia-300'],
-          ].map(([label, swatch]) => (
-            <li key={swatch} className="inline-flex items-center gap-1.5">
-              <span className={`h-2 w-2 rounded-full ${swatch}`} aria-hidden="true"></span>
-              {label}
+        {/* Screen readers get the whole number once; the segmented drawing below is visual only. */}
+        <p className="sr-only" aria-live="polite">{generatedIban}</p>
+        <div
+          aria-hidden="true"
+          className="figure flex min-h-[1em] gap-[0.5em] whitespace-nowrap font-mono font-medium leading-none tracking-[-0.01em]"
+          style={{ '--figure-units': 13.8 } as React.CSSProperties}
+        >
+          {generatedIban
+            ? segments.map((s) => (
+                <Dimensioned key={s.dim} label={s.dim} className={s.color}>
+                  {s.text}
+                </Dimensioned>
+              ))
+            : ' '}
+        </div>
+
+        {/* On phones the dimension lines don't fit, so the same information is a short legend. */}
+        <ul className="mt-4 text-[13px] sm:hidden">
+          {segments.map((s) => (
+            <li key={s.dim} className="flex h-7 items-center gap-2.5">
+              <span aria-hidden="true" className={`h-2.5 w-2.5 ${s.swatch}`} />
+              <span className="flex-1 text-ink-soft">{s.legend}</span>
+              <span className="font-mono text-xs text-muted">{s.text.length}</span>
             </li>
           ))}
         </ul>
+      </section>
 
-        {error && (
-          <div
-            role="alert"
-            className="mt-1 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-600/40 rounded-md px-2 py-1.5 leading-snug"
-          >
-            {error}
-          </div>
-        )}
+      <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-9">
+        <div className="flex flex-col gap-2 sm:w-[380px]">
+          <span id="bank-label" className="text-sm font-medium text-ink-soft">{strings.bankLabel}</span>
+          <CustomDropdown
+            options={bankData}
+            value={selectedBankKey}
+            onChange={handleBankChange}
+            disabled={isRandomSelected}
+            labelledBy="bank-label"
+            renderDisplay={(key) =>
+              key ? (
+                <span className="flex flex-1 items-center justify-between gap-3">
+                  {bankData[key]?.name}
+                  <span className="font-mono text-[13px] text-muted">{bankData[key]?.vbdi}</span>
+                </span>
+              ) : (
+                <span className="text-muted">{strings.selectBankPlaceholder}</span>
+              )
+            }
+            renderOption={(key, option) => (
+              <div className="flex justify-between gap-3">
+                <span>{option.name}</span>
+                <span className="font-mono text-[13px] text-muted">{option.vbdi}</span>
+              </div>
+            )}
+          />
+        </div>
+
+        <Switch
+          id="random-iban"
+          checked={isRandomSelected}
+          onChange={(isChecked) => {
+            setIsRandomSelected(isChecked);
+            if (isChecked) {
+              setSelectedBankKey('');
+            }
+          }}
+          label={strings.randomBank}
+        />
+
+        <PrimaryButton className="sm:ml-auto" onClick={() => generateAndSetIban()}>
+          {strings.generateIban}
+        </PrimaryButton>
       </div>
 
-      {/* Generate Button */}
-      <button
-        onClick={() => generateAndSetIban()}
-        aria-keyshortcuts="G"
-        className="w-full py-3.5 px-5 rounded-xl bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-600
-        dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-500 dark:text-slate-100/90
-        font-semibold shadow-sm shadow-teal-500/20 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_4px_14px_-4px_rgba(0,0,0,0.7)]
-        transition-colors flex items-center justify-center gap-2
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2
-        focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
-      >
-        <i className="fas fa-wand-magic-sparkles -rotate-12 opacity-90"></i>
-        <span className="tracking-wide">{strings.generateIban}</span>
-        <ShortcutHint />
-      </button>
+      {error && (
+        <p role="alert" className="mt-4 border-l-2 border-accent bg-paper px-3 py-2 text-sm text-ink">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

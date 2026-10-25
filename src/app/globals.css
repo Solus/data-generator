@@ -71,6 +71,18 @@
   color: var(--muted);
 }
 
+/* Generated numbers (IBAN, OIB) are one unbroken line that scales with the viewport so they never
+   overflow. --figure-units is the line's width in em (digits are 0.6em wide in the mono font, plus
+   gaps); the offset is the page chrome around the figure (phone / sm and up). */
+@utility figure {
+  --figure-offset: 4.2rem;
+  font-size: calc((100vw - var(--figure-offset)) / var(--figure-units, 14));
+  @media (min-width: 40rem) {
+    --figure-offset: 11.6rem;
+    font-size: min(3.5rem, calc((100vw - var(--figure-offset)) / var(--figure-units, 14)));
+  }
+}
+
 /* Visible keyboard focus everywhere, in the accent colour. */
 :focus-visible {
   outline: 2px solid var(--accent-2);

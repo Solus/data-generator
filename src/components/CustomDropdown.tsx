@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useId } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ChevronIcon } from './icons';
 
 interface CustomDropdownProps<T> {
   options: Record<string, T>;
@@ -12,6 +12,7 @@ interface CustomDropdownProps<T> {
   disabled?: boolean;
   /** id of the element that labels this dropdown (for screen readers) */
   labelledBy?: string;
+  className?: string;
 }
 
 // Select-only combobox following the WAI-ARIA pattern: the button owns focus and points at the
@@ -25,6 +26,7 @@ const CustomDropdown = <T,>({
   renderOption,
   disabled = false,
   labelledBy,
+  className = '',
 }: CustomDropdownProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -106,43 +108,38 @@ const CustomDropdown = <T,>({
   };
 
   return (
-    <div className='relative' ref={dropdownRef}>
+    <div className={`relative ${className}`} ref={dropdownRef}>
       <button
         ref={buttonRef}
-        type='button'
-        role='combobox'
-        aria-haspopup='listbox'
+        type="button"
+        role="combobox"
+        aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={isOpen ? listId : undefined}
         aria-activedescendant={isOpen ? optionId(activeIndex) : undefined}
         aria-labelledby={labelledBy}
         disabled={disabled}
-        className='w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-between bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed'
+        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-[2px] py-2 border border-control bg-sheet px-4 text-left text-[15px] text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-control"
         onClick={() => (isOpen ? setIsOpen(false) : open())}
         onKeyDown={handleKeyDown}
       >
         {renderDisplay(value)}
-        <ChevronDownIcon
-          className={`h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          aria-hidden='true'
-        />
+        <ChevronIcon width={14} height={14} className={`shrink-0 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
         <ul
           id={listId}
-          role='listbox'
+          role="listbox"
           aria-labelledby={labelledBy}
-          className='absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-[2px] border border-control bg-sheet shadow-[0_12px_32px_rgba(0,0,0,0.16)]"
         >
           {keys.map((key, index) => (
             <li
               key={key}
               id={optionId(index)}
-              role='option'
+              role="option"
               aria-selected={key === value}
-              className={`p-2 cursor-pointer ${
-                index === activeIndex ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
+              className={`cursor-pointer px-4 py-3 text-[15px] ${index === activeIndex ? 'bg-paper' : ''} ${key === value ? 'font-semibold' : ''}`}
               onMouseEnter={() => setActiveIndex(index)}
               // mousedown (not click) so the button keeps focus and the outside-click handler isn't involved
               onMouseDown={(e) => {

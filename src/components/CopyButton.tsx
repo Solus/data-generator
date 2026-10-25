@@ -3,12 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { copyToClipboard } from '@/utils/clipboard';
 import { useLocale } from '@/utils/locale';
+import { CheckIcon, CopyIcon, WarningIcon } from './icons';
 
 type CopyFeedback = 'idle' | 'success' | 'error';
 
 interface CopyButtonProps {
   textToCopy: string;
   className?: string;
+  /** Accessible name, e.g. "Copy IBAN". The visible text is always the short "Copy". */
   title?: string;
   onCopySuccess?: () => void;
   onCopyError?: (message: string) => void;
@@ -37,7 +39,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   const showFeedback = (feedback: CopyFeedback) => {
     setCopyFeedback(feedback);
     if (resetTimer.current) clearTimeout(resetTimer.current);
-    resetTimer.current = setTimeout(() => setCopyFeedback('idle'), 1000);
+    resetTimer.current = setTimeout(() => setCopyFeedback('idle'), 1500);
   };
 
   const handleCopy = async () => {
@@ -56,30 +58,30 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     }
   };
 
-  const baseClassName = 'flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900';
-  const feedbackClassName =
+  const stateClass =
     copyFeedback === 'success'
-      ? 'bg-teal-500 text-white animate-pulse'
+      ? 'border-ink bg-ink text-on-ink'
       : copyFeedback === 'error'
-        ? 'bg-red-500 text-white'
-        : 'bg-transparent text-teal-600 dark:text-teal-400 hover:bg-slate-200 dark:hover:bg-slate-700/60';
+        ? 'border-accent text-accent'
+        : 'border-ink text-ink hover:bg-ink hover:text-on-ink';
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className={`${baseClassName} ${feedbackClassName} ${className}`}
-      title={resolvedTitle}
-      aria-label={resolvedTitle}
-    >
-      {copyFeedback === 'success' ? (
-        <i className="fas fa-check" aria-hidden="true"></i>
-      ) : copyFeedback === 'error' ? (
-        <i className="fas fa-triangle-exclamation" aria-hidden="true"></i>
-      ) : (
-        <i className="far fa-copy" aria-hidden="true"></i>
-      )}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={handleCopy}
+        title={resolvedTitle}
+        aria-label={resolvedTitle}
+        className={`inline-flex h-11 items-center gap-2 rounded-[2px] border px-3.5 text-sm font-medium transition-colors sm:h-[34px] ${stateClass} ${className}`}
+      >
+        {copyFeedback === 'success' ? <CheckIcon width={15} height={15} /> : copyFeedback === 'error' ? <WarningIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
+        {copyFeedback === 'success' ? strings.copied : strings.copy}
+      </button>
+      {/* Announces the result to screen readers; the button's own text change isn't announced. */}
+      <span role="status" className="sr-only">
+        {copyFeedback === 'success' ? strings.copied : ''}
+      </span>
+    </>
   );
 };
 

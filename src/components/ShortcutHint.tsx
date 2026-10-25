@@ -6,7 +6,7 @@ import { GENERATE_SHORTCUT_KEY } from '@/utils/useGenerateShortcut';
 const ShortcutHint: React.FC = () => (
   <kbd
     aria-hidden="true"
-    className="ml-1 hidden rounded border border-white/40 px-1.5 text-xs font-mono uppercase leading-5 opacity-80 [@media(hover:hover)]:inline-block"
+    className="hidden rounded-[2px] border border-current px-1.5 font-mono text-xs uppercase leading-5 opacity-70 [@media(hover:hover)]:inline-block"
   >
     {GENERATE_SHORTCUT_KEY}
   </kbd>
