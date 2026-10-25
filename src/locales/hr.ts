@@ -11,6 +11,7 @@ const hr = {
   firstNameHeader: 'Ime',
   lastNameHeader: 'Prezime',
   openActions: 'Otvori akcije',
+  usedBuiltInNames: 'AI trenutno nije dostupan pa su imena uzeta iz ugrađenog popisa.',
   noNamesGenerated: 'Nisu generirana imena. Molimo pokušajte ponovno.',
   ibanGenerator: 'Generator IBAN-a',
   oibGenerator: 'Generator OIB-a',

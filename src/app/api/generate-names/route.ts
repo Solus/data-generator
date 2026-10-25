@@ -18,23 +18,46 @@ export async function POST(request: Request) {
     const prompt = `Generate a list of ${numNames} unique Croatian first and last names. Format each name as "Firstname,Lastname" on a new line, with no introductory or concluding text.`;
     const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
     const payload = { contents: chatHistory };
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-    const geminiResponse = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    // Try the primary model, then the fallback. Overload/rate-limit errors are retried once per model.
+    const models = [
+      process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite',
+      process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash',
+    ];
+    const retryable = (status: number) => status === 429 || status >= 500;
 
-    const result = await geminiResponse.json();
+    let lastStatus = 500;
+    let lastMessage = 'An error occurred with the Google API.';
 
-    if (!geminiResponse.ok) {
-      console.error('Google API Error:', result);
-      const errorMessage = result.error?.message || 'An error occurred with the Google API.';
-      return NextResponse.json({ error: errorMessage }, { status: geminiResponse.status });
+    for (const model of models) {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        try {
+          const geminiResponse = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(20000),
+          });
+          const result = await geminiResponse.json();
+
+          if (geminiResponse.ok) {
+            return NextResponse.json(result);
+          }
+
+          console.error(`Google API Error (${model}, attempt ${attempt + 1}):`, result);
+          lastStatus = geminiResponse.status;
+          lastMessage = result.error?.message || lastMessage;
+          if (!retryable(geminiResponse.status)) break; // e.g. retired model: go straight to the next one
+        } catch (err) {
+          console.error(`Request to ${model} failed (attempt ${attempt + 1}):`, err);
+          lastStatus = 504;
+          lastMessage = 'The Google API did not respond in time.';
+        }
+      }
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json({ error: lastMessage }, { status: lastStatus });
   } catch (e: unknown) {
     console.error('Error in /api/generate-names:', e);
     const errorMessage = e instanceof Error ? e.message : 'An unknown server error occurred.';

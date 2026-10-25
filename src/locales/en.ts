@@ -11,6 +11,7 @@ const en = {
   firstNameHeader: 'First Name',
   lastNameHeader: 'Last Name',
   openActions: 'Open actions',
+  usedBuiltInNames: 'AI is unavailable right now, so names came from the built-in list.',
   noNamesGenerated: 'No names generated. Please try again.',
   ibanGenerator: 'IBAN Generator',
   oibGenerator: 'OIB Generator',

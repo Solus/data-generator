@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { copyToClipboard } from '@/utils/clipboard';
+import { generateLocalNames } from '@/utils/names';
 import { useLocale } from '@/utils/locale';
 
 interface Name {
@@ -15,6 +16,7 @@ const NamesGenerator: React.FC = () => {
   const [names, setNames] = useState<Name[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
 
   const { strings } = useLocale();
@@ -42,6 +44,7 @@ const NamesGenerator: React.FC = () => {
 
   const generateNames = async () => {
     setError(null);
+    setNotice(null);
     setLoading(true);
 
     try {
@@ -58,27 +61,22 @@ const NamesGenerator: React.FC = () => {
         throw new Error(result.error || 'Failed to generate names.');
       }
 
-      if (result.candidates && result.candidates.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        const nameLines = text.split('\n').filter((line: string) => line.trim() !== '');
-        const newNames = nameLines.map((line: string) => {
+      const text: string | undefined = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      const newNames: Name[] = (text ?? '')
+        .split('\n')
+        .filter((line: string) => line.includes(','))
+        .map((line: string) => {
           const parts = line.split(',');
-          return { firstName: parts[0]?.trim(), lastName: parts[1]?.trim() };
+          return { firstName: parts[0].trim(), lastName: parts[1].trim() };
         });
-        setNames(newNames);
-      } else {
-        const errorMessage = result.error?.message || strings.noNamesGenerated;
-        setError(errorMessage);
-        setNames([]);
-      }
+
+      if (newNames.length === 0) throw new Error(strings.noNamesGenerated);
+      setNames(newNames);
     } catch (e: unknown) {
+      // AI unavailable or returned nothing usable: use the built-in list instead.
       console.error(e);
-      let errorMessage = 'An error occurred while fetching names.';
-      if (e instanceof Error) {
-        errorMessage = `Error: ${e.message}`;
-      }
-      setError(errorMessage);
-      setNames([]);
+      setNames(generateLocalNames(numNames));
+      setNotice(strings.usedBuiltInNames);
     } finally {
       setLoading(false);
     }
@@ -165,6 +163,17 @@ const NamesGenerator: React.FC = () => {
             className="text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-600/40 rounded-md px-3 py-1.5 leading-snug"
           >
             {error}
+          </div>
+        </div>
+      )}
+
+      {notice && !loading && (
+        <div className="flex justify-center">
+          <div
+            role="status"
+            className="text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-600/40 rounded-md px-3 py-1.5 leading-snug"
+          >
+            {notice}
           </div>
         </div>
       )}
