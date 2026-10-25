@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Runs before first paint so the saved/system theme is applied with no flash of the wrong one.
-const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}})();`;
+const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}})();`;
 
 // Small registration mark drawn at each corner of the sheet (decorative).
 const Crosshair = ({ className }: { className: string }) => (

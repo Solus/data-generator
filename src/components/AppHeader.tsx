@@ -10,13 +10,13 @@ const AppHeader: React.FC = () => {
 
   return (
     <div className="flex h-14 items-center justify-between pl-5 pr-1 sm:h-[60px] sm:px-10">
-      <p className="flex items-center gap-2.5 text-sm font-semibold sm:gap-3 sm:text-[15px]">
-        <span aria-hidden="true" className="relative inline-block h-4 w-4 border-[1.5px] border-ink sm:h-[18px] sm:w-[18px]">
+      <p className="flex min-w-0 items-center gap-2.5 text-[13px] font-semibold leading-tight sm:gap-3 sm:text-[15px]">
+        <span aria-hidden="true" className="relative inline-block h-4 w-4 shrink-0 border-[1.5px] border-ink sm:h-[18px] sm:w-[18px]">
           <span className="absolute left-[2.5px] top-[2.5px] h-[7px] w-[7px] bg-accent sm:left-[3px] sm:top-[3px] sm:h-2 sm:w-2" />
         </span>
         {strings.appTitle}
       </p>
-      <div className="flex items-center gap-1 sm:gap-7">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-6">
         <LanguageSelector />
         <ThemeToggleWrapper />
       </div>

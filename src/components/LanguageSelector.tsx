@@ -24,7 +24,7 @@ const LanguageSelector: React.FC = () => {
             aria-label={l.name}
             aria-pressed={lang === l.code}
             onClick={() => setLang(l.code)}
-            className={`flex h-11 min-w-9 items-center justify-center px-1 sm:min-w-0 ${lang === l.code ? 'font-semibold text-ink' : 'text-muted hover:text-ink'}`}
+            className={`flex h-11 min-w-8 items-center justify-center px-1 sm:min-w-0 ${lang === l.code ? 'font-semibold text-ink' : 'text-muted hover:text-ink'}`}
           >
             {l.label}
           </button>
