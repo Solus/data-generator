@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { copyToClipboard } from '@/utils/clipboard';
 import { generateLocalNames } from '@/utils/names';
@@ -20,6 +20,11 @@ const NamesGenerator: React.FC = () => {
   const [copyStatus, setCopyStatus] = useState<Record<string, 'idle' | 'success'>>({});
 
   const { strings } = useLocale();
+
+  // Show a ready-to-use list on load (built-in list: instant, no AI call). Done after mount to avoid a hydration mismatch.
+  useEffect(() => {
+    setNames(generateLocalNames(10));
+  }, []);
 
   const handleCopy = async (text: string, key: string) => {
     const success = await copyToClipboard(text);
@@ -180,6 +185,24 @@ const NamesGenerator: React.FC = () => {
 
       {!loading && names.length > 0 && (
         <div className="space-y-2.5" aria-live="polite">
+          <div className="flex flex-wrap justify-end gap-2">
+            {([
+              ['all', strings.copyAll, names.map(n => `${n.firstName} ${n.lastName}`).join('\n')],
+              ['csv', strings.copyAllCsv, names.map(n => `${n.firstName},${n.lastName}`).join('\n')],
+            ] as const).map(([key, label, text]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleCopy(text, key)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-slate-700/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+              >
+                {copyStatus[key] === 'success'
+                  ? <i className="fas fa-check text-green-500" aria-hidden="true"></i>
+                  : <i className="far fa-copy" aria-hidden="true"></i>}
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="grid grid-cols-[1fr_1fr_auto] gap-x-3 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-slate-400">
             <div className="pl-1.5">{strings.firstNameHeader}</div>
             <div className="pl-1.5">{strings.lastNameHeader}</div>
@@ -196,7 +219,7 @@ const NamesGenerator: React.FC = () => {
                   {name.firstName}
                   <button
                     onClick={() => handleCopy(name.firstName, `${index}-firstName`)}
-                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
+                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
                     title={strings.copyText(name.firstName)}
                   >
                     {copyStatus[`${index}-firstName`] === 'success'
@@ -210,7 +233,7 @@ const NamesGenerator: React.FC = () => {
                   {name.lastName}
                   <button
                     onClick={() => handleCopy(name.lastName, `${index}-lastName`)}
-                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
+                    className="ml-auto w-7 h-7 flex items-center justify-center rounded-md bg-transparent hover:bg-teal-100 dark:hover:bg-slate-700/60 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900"
                     title={strings.copyText(name.lastName)}
                   >
                     {copyStatus[`${index}-lastName`] === 'success'

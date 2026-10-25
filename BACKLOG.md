@@ -3,9 +3,6 @@
 UX improvements and open questions found in the June UX review but not yet done.
 
 ## UX
-- **Names: "copy all"** (and/or copy as CSV) for the generated list. Biggest missing feature on that page.
-- **Names: per-name copy buttons are hover-only**, so they're invisible on touch screens. Show them always on small screens.
-- **Names page starts empty.** IBAN/OIB show a value on load; consider pre-generating names (using the built-in list so it's instant).
 - **No keyboard shortcut to regenerate** (e.g. Enter/Space or `R`) on any page.
 - **Tab bar is clipped on phones** ("Generator imena" cut off, needs sideways scroll). Shorter labels or a wrapping layout.
 - **IBAN colour segments have no legend** (country / check digits / bank / account number).
