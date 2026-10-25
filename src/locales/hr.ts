@@ -18,6 +18,7 @@ const hr = {
   ibanResultLabel: 'Generirani IBAN',
   oibResultLabel: 'Generirani OIB',
   copied: 'Kopirano',
+  clickToCopy: 'Kliknite broj za kopiranje',
   ibanDimCheck: 'Država + KB',
   ibanDimBank: 'Šifra banke',
   ibanDimAccount: 'Broj računa',

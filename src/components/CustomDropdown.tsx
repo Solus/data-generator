@@ -119,12 +119,12 @@ const CustomDropdown = <T,>({
         aria-activedescendant={isOpen ? optionId(activeIndex) : undefined}
         aria-labelledby={labelledBy}
         disabled={disabled}
-        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-[2px] py-2 border border-control bg-sheet px-4 text-left text-[15px] text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:border-control"
+        className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-[2px] border border-control bg-sheet px-4 py-2 text-left text-[15px] text-ink hover:border-ink disabled:cursor-not-allowed disabled:border-line disabled:bg-paper disabled:text-ink-soft disabled:hover:border-line"
         onClick={() => (isOpen ? setIsOpen(false) : open())}
         onKeyDown={handleKeyDown}
       >
         {renderDisplay(value)}
-        <ChevronIcon width={14} height={14} className={`shrink-0 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronIcon width={14} height={14} className={`shrink-0 transition-transform duration-150 group-disabled:opacity-40 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
         <ul

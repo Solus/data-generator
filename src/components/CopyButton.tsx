@@ -1,67 +1,32 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { copyToClipboard } from '@/utils/clipboard';
+import React from 'react';
 import { useLocale } from '@/utils/locale';
+import { COPY_SHORTCUT_KEY } from '@/utils/useGenerateShortcut';
+import type { CopyStatus } from '@/utils/useCopyFeedback';
 import { CheckIcon, CopyIcon, WarningIcon } from './icons';
-
-type CopyFeedback = 'idle' | 'success' | 'error';
+import ShortcutHint from './ShortcutHint';
 
 interface CopyButtonProps {
-  textToCopy: string;
-  className?: string;
-  /** Accessible name, e.g. "Copy IBAN". The visible text is always the short "Copy". */
+  status: CopyStatus;
+  onClick: () => void;
+  /** Accessible name, e.g. "Copy IBAN". The visible text is always the short label. */
   title?: string;
-  onCopySuccess?: () => void;
-  onCopyError?: (message: string) => void;
-  onNoText?: () => void;
+  /** Visible text; defaults to "Copy". */
+  label?: string;
 }
 
-const CopyButton: React.FC<CopyButtonProps> = ({
-  textToCopy,
-  className = '',
-  title,
-  onCopySuccess,
-  onCopyError,
-  onNoText,
-}) => {
-  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback>('idle');
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+// The secondary action next to the primary button. Purely presentational: the page owns the
+// useCopyFeedback state so a keyboard shortcut and this button give the same feedback.
+const CopyButton: React.FC<CopyButtonProps> = ({ status, onClick, title, label }) => {
   const { strings } = useLocale();
-
-  const resolvedTitle = title ?? strings.copy;
-
-  // Don't touch state after unmount.
-  useEffect(() => () => {
-    if (resetTimer.current) clearTimeout(resetTimer.current);
-  }, []);
-
-  const showFeedback = (feedback: CopyFeedback) => {
-    setCopyFeedback(feedback);
-    if (resetTimer.current) clearTimeout(resetTimer.current);
-    resetTimer.current = setTimeout(() => setCopyFeedback('idle'), 1500);
-  };
-
-  const handleCopy = async () => {
-    if (!textToCopy) {
-      onNoText?.();
-      return;
-    }
-
-    const success = await copyToClipboard(textToCopy);
-    if (success) {
-      showFeedback('success');
-      onCopySuccess?.();
-    } else {
-      showFeedback('error');
-      onCopyError?.(strings.copyFailed);
-    }
-  };
+  const text = label ?? strings.copy;
+  const name = title ?? text;
 
   const stateClass =
-    copyFeedback === 'success'
+    status === 'success'
       ? 'border-ink bg-ink text-on-ink'
-      : copyFeedback === 'error'
+      : status === 'error'
         ? 'border-accent text-accent'
         : 'border-ink text-ink hover:bg-ink hover:text-on-ink';
 
@@ -69,17 +34,20 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     <>
       <button
         type="button"
-        onClick={handleCopy}
-        title={resolvedTitle}
-        aria-label={resolvedTitle}
-        className={`inline-flex h-11 items-center gap-2 rounded-[2px] border px-3.5 text-sm font-medium transition-colors sm:h-[34px] ${stateClass} ${className}`}
+        onClick={onClick}
+        title={name}
+        aria-label={name}
+        aria-keyshortcuts={COPY_SHORTCUT_KEY.toUpperCase()}
+        className={`inline-flex h-[52px] shrink-0 items-center justify-center gap-2.5 rounded-[2px] border px-4 text-[15px] font-medium transition-colors sm:h-12 ${stateClass}`}
       >
-        {copyFeedback === 'success' ? <CheckIcon width={15} height={15} /> : copyFeedback === 'error' ? <WarningIcon width={15} height={15} /> : <CopyIcon width={15} height={15} />}
-        {copyFeedback === 'success' ? strings.copied : strings.copy}
+        {status === 'success' ? <CheckIcon /> : status === 'error' ? <WarningIcon /> : <CopyIcon />}
+        {/* Icon-only below 360px so the primary button's label stays on one line (name stays via aria-label). */}
+        <span className="max-[359px]:sr-only">{status === 'success' ? strings.copied : text}</span>
+        <ShortcutHint keyName={COPY_SHORTCUT_KEY} />
       </button>
       {/* Announces the result to screen readers; the button's own text change isn't announced. */}
       <span role="status" className="sr-only">
-        {copyFeedback === 'success' ? strings.copied : ''}
+        {status === 'success' ? strings.copied : ''}
       </span>
     </>
   );

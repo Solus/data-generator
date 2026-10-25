@@ -18,6 +18,7 @@ const en = {
   ibanResultLabel: 'Generated IBAN',
   oibResultLabel: 'Generated OIB',
   copied: 'Copied',
+  clickToCopy: 'Click the number to copy',
   ibanDimCheck: 'HR + check',
   ibanDimBank: 'Bank code',
   ibanDimAccount: 'Account no.',
