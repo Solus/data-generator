@@ -31,8 +31,6 @@ const en = {
   tabIban: 'IBAN',
   tabOib: 'OIB',
   tabNames: 'Names',
-  ibanSubtitle: 'A valid Croatian IBAN for the bank you choose.',
-  oibSubtitle: 'A valid Croatian personal identification number (OIB).',
   namesSubtitle: 'Croatian first and last names, up to 50 at a time.',
   testDataNote: 'Test data. Numbers are formally valid but do not belong to real accounts or people.',
   sheetLabel: 'Sheet',

@@ -32,8 +32,6 @@ const hr = {
   tabIban: 'IBAN',
   tabOib: 'OIB',
   tabNames: 'Imena',
-  ibanSubtitle: 'Valjani hrvatski IBAN za odabranu banku.',
-  oibSubtitle: 'Valjani hrvatski osobni identifikacijski broj (OIB).',
   namesSubtitle: 'Hrvatska imena i prezimena, do 50 odjednom.',
   testDataNote: 'Testni podaci. Brojevi su formalno ispravni, ali ne pripadaju stvarnim računima ni osobama.',
   sheetLabel: 'List',
