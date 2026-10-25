@@ -5,6 +5,7 @@ import CustomDropdown from './CustomDropdown';
 import CopyButton from './CopyButton';
 import Dimensioned from './Dimensioned';
 import PrimaryButton from './PrimaryButton';
+import SpecTable from './SpecTable';
 import Switch from './Switch';
 import { generateAccountNumber, calculateIBANCheckDigits } from '@/utils/generators';
 import { useLocale } from '@/utils/locale';
@@ -174,6 +175,14 @@ const IbanGenerator: React.FC = () => {
           {error}
         </p>
       )}
+
+      <SpecTable
+        rows={[
+          [strings.specLength, strings.charsCount(21)],
+          [strings.specAlgorithm, 'ISO 13616, MOD 97-10'],
+          [strings.specAccountCheck, 'ISO 7064, MOD 11,10'],
+        ]}
+      />
     </div>
   );
 };

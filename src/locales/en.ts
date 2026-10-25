@@ -25,6 +25,8 @@ const en = {
   numberHeader: 'No.',
   specLength: 'Length',
   specAlgorithm: 'Algorithm',
+  specAccountCheck: 'Account check digit',
+  charsCount: (n: number) => `${n} characters`,
   digitsCount: (n: number) => `${n} digits`,
   tabIban: 'IBAN',
   tabOib: 'OIB',

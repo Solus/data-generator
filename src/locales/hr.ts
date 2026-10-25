@@ -25,6 +25,9 @@ const hr = {
   numberHeader: 'Br.',
   specLength: 'Duljina',
   specAlgorithm: 'Algoritam',
+  specAccountCheck: 'Kontrolna znamenka računa',
+  // Croatian plural: 21 znak, but 22 znaka / 25 znakova
+  charsCount: (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'znak' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'znaka' : 'znakova'}`,
   digitsCount: (n: number) => `${n} znamenki`,
   tabIban: 'IBAN',
   tabOib: 'OIB',

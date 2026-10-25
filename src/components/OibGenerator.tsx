@@ -5,6 +5,7 @@ import { generateRandomDigits, calculateOIBCheckDigit } from '@/utils/generators
 import CopyButton from './CopyButton';
 import Dimensioned from './Dimensioned';
 import PrimaryButton from './PrimaryButton';
+import SpecTable from './SpecTable';
 import { useLocale } from '@/utils/locale';
 import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
 
@@ -68,14 +69,7 @@ const OibGenerator: React.FC = () => {
         </p>
       )}
 
-      <dl className="mt-9 border-t border-line">
-        {specs.map(([label, value]) => (
-          <div key={label} className="grid min-h-[42px] grid-cols-[8.5rem_1fr] items-center gap-4 border-b border-line py-2 sm:grid-cols-[220px_1fr]">
-            <dt className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">{label}</dt>
-            <dd className="text-[15px]">{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <SpecTable rows={specs} />
     </div>
   );
 };
