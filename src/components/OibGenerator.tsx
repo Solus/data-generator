@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { generateRandomDigits, calculateOIBCheckDigit } from '@/utils/generators';
 import CopyButton from './CopyButton';
 import { useLocale } from '@/utils/locale';
+import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
+import ShortcutHint from './ShortcutHint';
 
 const OibGenerator: React.FC = () => {
   const [generatedOib, setGeneratedOib] = useState('');
@@ -16,6 +18,8 @@ const OibGenerator: React.FC = () => {
     const checkDigit = calculateOIBCheckDigit(firstTenDigits);
     setGeneratedOib(firstTenDigits + checkDigit);
   };
+
+  useGenerateShortcut(generateOib);
 
   // Generate after mount: a random value during render differs between server and browser (hydration mismatch).
   useEffect(() => {
@@ -72,6 +76,7 @@ const OibGenerator: React.FC = () => {
       {/* Generate Button */}
       <button
         onClick={generateOib}
+        aria-keyshortcuts="G"
         className="w-full py-3.5 px-5 rounded-xl bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-600
         dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-500 dark:text-slate-100/90
         font-semibold shadow-sm shadow-teal-500/20 transition-colors flex items-center justify-center gap-2
@@ -80,6 +85,7 @@ const OibGenerator: React.FC = () => {
       >
         <i className="fas fa-dice -rotate-12 opacity-90"></i>
         <span className="tracking-wide">{strings.generateOib}</span>
+        <ShortcutHint />
       </button>
     </div>
   );

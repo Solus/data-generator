@@ -5,6 +5,8 @@ import { SparklesIcon } from '@heroicons/react/24/solid';
 import { copyToClipboard } from '@/utils/clipboard';
 import { generateLocalNames } from '@/utils/names';
 import { useLocale } from '@/utils/locale';
+import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
+import ShortcutHint from './ShortcutHint';
 
 interface Name {
   firstName: string;
@@ -87,6 +89,10 @@ const NamesGenerator: React.FC = () => {
     }
   };
 
+  useGenerateShortcut(() => {
+    if (!loading) generateNames();
+  });
+
   return (
     <div className="space-y-6">
       {/* Count + Generate */}
@@ -132,6 +138,7 @@ const NamesGenerator: React.FC = () => {
             onClick={generateNames}
             disabled={loading}
             aria-busy={loading}
+            aria-keyshortcuts="G"
             className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-600
             dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-500 dark:text-slate-100/90
             font-semibold shadow-sm shadow-teal-500/20 transition-colors
@@ -141,6 +148,7 @@ const NamesGenerator: React.FC = () => {
           >
             <SparklesIcon className="w-5 h-5 -rotate-12 opacity-90" aria-hidden="true" />
             <span className="tracking-wide">{strings.generateNames}</span>
+            <ShortcutHint />
           </button>
         </div>
       </div>

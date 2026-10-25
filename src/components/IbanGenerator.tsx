@@ -5,6 +5,8 @@ import CustomDropdown from './CustomDropdown';
 import CopyButton from './CopyButton';
 import { generateRandomDigits, calculateIBANCheckDigits } from '@/utils/generators';
 import { useLocale } from '@/utils/locale';
+import { useGenerateShortcut } from '@/utils/useGenerateShortcut';
+import ShortcutHint from './ShortcutHint';
 
 interface Bank {
   name: string;
@@ -57,6 +59,8 @@ const IbanGenerator: React.FC = () => {
     const iban = countryCode + checkDigits + bbban;
     setGeneratedIban(iban);
   };
+
+  useGenerateShortcut(() => generateAndSetIban());
 
   // Effect to generate IBAN on initial load only.
   useEffect(() => {
@@ -201,6 +205,7 @@ const IbanGenerator: React.FC = () => {
       {/* Generate Button */}
       <button
         onClick={() => generateAndSetIban()}
+        aria-keyshortcuts="G"
         className="w-full py-3.5 px-5 rounded-xl bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-600
         dark:bg-teal-600 dark:hover:bg-teal-500 dark:active:bg-teal-500 dark:text-slate-100/90
         font-semibold shadow-sm shadow-teal-500/20 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_4px_14px_-4px_rgba(0,0,0,0.7)]
@@ -210,6 +215,7 @@ const IbanGenerator: React.FC = () => {
       >
         <i className="fas fa-wand-magic-sparkles -rotate-12 opacity-90"></i>
         <span className="tracking-wide">{strings.generateIban}</span>
+        <ShortcutHint />
       </button>
     </div>
   );
