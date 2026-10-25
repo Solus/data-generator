@@ -24,6 +24,7 @@ export const LocaleProvider: React.FC<React.PropsWithChildren<{ initialLang?: La
     setLangState(l);
     document.cookie = `${LANG_COOKIE}=${l}; path=/; max-age=31536000; samesite=lax`;
     document.documentElement.lang = l;
+    document.title = (l === 'hr' ? hr : en).appTitle;
   }, []);
 
   return <LocaleContext.Provider value={{ lang, setLang, strings }}>{children}</LocaleContext.Provider>;

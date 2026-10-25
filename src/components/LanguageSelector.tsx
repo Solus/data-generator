@@ -4,17 +4,16 @@ import React from 'react';
 import { useLocale } from '@/utils/locale';
 
 const LanguageSelector: React.FC = () => {
-  const { lang, setLang } = useLocale();
+  const { lang, setLang, strings } = useLocale();
 
   return (
     <div>
-      <label htmlFor='lang-select' className='sr-only'>Select language</label>
+      <label htmlFor='lang-select' className='sr-only'>{strings.selectLanguage}</label>
       <select
         id='lang-select'
         value={lang}
         onChange={(e) => setLang(e.target.value as 'hr' | 'en')}
         className='rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-sm'
-        aria-label='Select language'
       >
         <option value='hr'>HR</option>
         <option value='en'>EN</option>

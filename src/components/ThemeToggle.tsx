@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from '@/utils/locale';
 
 interface ThemeToggleProps {
   isDarkMode: boolean;
@@ -8,6 +9,9 @@ interface ThemeToggleProps {
 }
 
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ isDarkMode, toggleDarkMode }) => {
+  const { strings } = useLocale();
+  const label = isDarkMode ? strings.toggleLightMode : strings.toggleDarkMode;
+
   return (
     <button
       type="button"
@@ -17,7 +21,8 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ isDarkMode, toggleDarkMode })
       className={`${
         isDarkMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
       } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800`}
-      title={isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}
+      title={label}
+      aria-label={label}
     >
       <span
         aria-hidden="true"

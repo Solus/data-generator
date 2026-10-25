@@ -4,16 +4,21 @@ import { Inter } from 'next/font/google';
 import Navigation from '@/components/Navigation';
 import ThemeToggleWrapper from '@/components/ThemeToggleWrapper';
 import LanguageSelector from '@/components/LanguageSelector';
+import AppHeading from '@/components/AppHeading';
+import en from '@/locales/en';
+import hr from '@/locales/hr';
 import { cookies } from 'next/headers';
 import { LocaleProvider } from '@/utils/locale';
 import { LANG_COOKIE, type Lang } from '@/utils/lang';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Data Generator',
-  description: 'A simple web application to generate Croatian IBANs, OIBs, and names.',
-};
+const getLang = async (): Promise<Lang> => ((await cookies()).get(LANG_COOKIE)?.value === 'en' ? 'en' : 'hr');
+
+export async function generateMetadata(): Promise<Metadata> {
+  const strings = (await getLang()) === 'en' ? en : hr;
+  return { title: strings.appTitle, description: strings.appDescription };
+}
 
 // Runs before first paint so the saved/system theme is applied with no flash of the wrong one.
 const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}})();`;
@@ -23,7 +28,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lang: Lang = (await cookies()).get(LANG_COOKIE)?.value === 'en' ? 'en' : 'hr';
+  const lang = await getLang();
 
   return (
 	// suppressHydrationWarning: the inline theme script changes <html class> before React hydrates.
@@ -56,10 +61,7 @@ export default async function RootLayout({
 					<div className="min-h-screen">
 						<div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
 							<div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-								<div>
-									<h1 className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Data Generator</h1>
-									<p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Generate Croatian IBANs, OIBs, and names with a single click.</p>
-								</div>
+							<AppHeading />
 								<div className="flex items-center space-x-3 rounded-full bg-white/70 dark:bg-slate-800/60 px-3 py-2 shadow-lg shadow-cyan-200/30 dark:shadow-cyan-900/40 backdrop-blur md:space-x-4">
 									<LanguageSelector />
 									<ThemeToggleWrapper />
