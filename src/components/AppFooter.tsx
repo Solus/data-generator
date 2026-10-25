@@ -3,33 +3,32 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { useLocale } from '@/utils/locale';
-import { PAGES, pad } from './PageIntro';
-import pkg from '../../package.json';
+import { COPY_SHORTCUT_KEY, GENERATE_SHORTCUT_KEY } from '@/utils/useGenerateShortcut';
+import ThemeToggleWrapper from './ThemeToggleWrapper';
 
-// Test-data note, plus a small drawing-sheet style title block (hidden on phones).
+const Key: React.FC<{ children: string }> = ({ children }) => (
+  <kbd className="rounded-[2px] border border-dim px-1.5 font-mono text-xs uppercase leading-5 text-ink">{children}</kbd>
+);
+
+// Test-data note; on sm and up a legend of the keyboard shortcuts, on phones the theme switch.
 const AppFooter: React.FC = () => {
   const pathname = usePathname();
   const { strings } = useLocale();
-  const index = PAGES.findIndex(p => p.href === pathname);
-  const current = index >= 0 ? PAGES[index] : null;
-
-  const cells: [string, string][] = [
-    [strings.sheetLabel, current ? `${pad(index + 1)} / ${pad(PAGES.length)}` : '—'],
-    [strings.typeLabel, current ? strings[current.tabKey] : '—'],
-    [strings.versionLabel, pkg.version],
-  ];
+  const copyLabel = pathname === '/names' ? strings.copyAll : strings.copy;
 
   return (
-    <footer className="flex items-center justify-between gap-6 border-t border-line px-5 py-3.5 sm:h-14 sm:px-10 sm:py-0">
+    <footer className="border-t border-line px-5 py-3.5 sm:flex sm:h-14 sm:items-center sm:justify-between sm:gap-6 sm:px-10 sm:py-0">
       <p className="text-xs leading-relaxed text-muted sm:text-[13px]">{strings.testDataNote}</p>
-      <dl aria-hidden="true" className="hidden shrink-0 border border-frame font-mono text-[11px] uppercase tracking-[0.06em] text-muted sm:flex">
-        {cells.map(([label, value], i) => (
-          <div key={label} className={`px-3.5 py-1.5 ${i < cells.length - 1 ? 'border-r border-frame' : ''}`}>
-            <dt className="inline">{label} </dt>
-            <dd className="inline text-ink">{value}</dd>
-          </div>
-        ))}
-      </dl>
+
+      <ul className="hidden shrink-0 gap-5 text-[13px] text-muted [@media(hover:hover)]:flex">
+        <li className="flex items-center gap-2"><Key>{GENERATE_SHORTCUT_KEY}</Key>{strings.shortcutGenerate}</li>
+        <li className="flex items-center gap-2"><Key>{COPY_SHORTCUT_KEY}</Key>{copyLabel}</li>
+      </ul>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:hidden">
+        <span className="text-[13px] text-ink-soft">{strings.themeLabel}</span>
+        <ThemeToggleWrapper size="md" />
+      </div>
     </footer>
   );
 };
